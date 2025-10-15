@@ -24,3 +24,15 @@ application/logs/*
 ### CodeIgniter Patch ###
 
 # End of https://www.toptal.com/developers/gitignore/api/codeigniter
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Sensitive configuration files
+application/config/database.php
+application/config/stripe.php
+
+# Logs
+*.log

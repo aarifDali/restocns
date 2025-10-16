@@ -42,7 +42,7 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
 <div class="aside-overlay aside-trigger"></div>
 
 <!-- Header Start -->
-<header class="main-header header-1 header-4 header-light header-absolute">
+<header class="main-header can-sticky header-1 header-4 header-light header-absolute">
 
   <div class="container">
     <nav class="navbar">

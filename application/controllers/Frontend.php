@@ -83,6 +83,7 @@ class Frontend extends Cl_Controller {
             $this->form_validation->set_rules('main_header', lang('main_header'), 'required|max_length[55]');
             $this->form_validation->set_rules('short_des', lang('short_des'), 'required|max_length[255]');
             $this->form_validation->set_rules('main_banner', lang('main_banner'), 'callback_validate_main_banner');
+            $this->form_validation->set_rules('animated_image', lang('animated_image'), 'callback_validate_animated_image');
             if ($this->form_validation->run() == TRUE) {
                 $banner_section = array();
                 $banner_section['main_header'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('main_header')));
@@ -94,8 +95,13 @@ class Frontend extends Cl_Controller {
                 }else{
                     $banner_section['main_banner'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('main_banner_old')));
                 }
-               
-               
+                
+                if ($_FILES['animated_image']['name'] != "") {
+                    $banner_section['animated_image'] = $this->session->userdata('animated_image');
+                    $this->session->unset_userdata('animated_image');
+                }else{
+                    $banner_section['animated_image'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('animated_image_old')));
+                }
                 
                 $return['main_banner_section']  = json_encode($banner_section);
                 $this->Common_model->updateInformation($return, $company_id, "tbl_companies");
@@ -147,6 +153,41 @@ class Frontend extends Cl_Controller {
                     $this->session->set_userdata('main_banner', $file_name);
                 } else {
                     $this->form_validation->set_message('validate_main_banner', $this->upload->display_errors());
+                    return TRUE;
+                }
+            } else {
+                echo "Something went wrong";
+            }
+        }
+    }
+
+    /**
+     * validate_animated_image
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function validate_animated_image() {
+        if ($_FILES['animated_image']['name'] != "") {
+            $config['upload_path'] = './uploads/banner_section';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size'] = '2000';
+            $config['encrypt_name'] = TRUE;
+            $config['detect_mime'] = TRUE;
+            $this->load->library('upload', $config);
+
+            if(createDirectory('uploads/banner_section')){
+                
+                $old_file = $this->session->userdata('animated_image');
+                if ($old_file && file_exists($config['upload_path'] . '/' . $old_file)) {
+                    unlink($config['upload_path'] . '/' . $old_file);
+                }
+                if ($this->upload->do_upload("animated_image")) {
+                    $upload_info = $this->upload->data();
+                    $file_name = $upload_info['file_name'];
+                    $this->session->set_userdata('animated_image', $file_name);
+                } else {
+                    $this->form_validation->set_message('validate_animated_image', $this->upload->display_errors());
                     return TRUE;
                 }
             } else {
@@ -1638,8 +1679,9 @@ class Frontend extends Cl_Controller {
                 $file_name = $upload_info['file_name'];
                 $config['image_library'] = 'gd2';
                 $config['source_image'] = './images/' . $file_name;
-                $config['width'] = 120;
-                $config['height'] = 36;
+                $config['width'] = 300;  
+                $config['height'] = 100;
+                $config['maintain_ratio'] = TRUE;
                 $this->load->library('image_lib', $config);
                 $this->image_lib->resize();
                 $this->session->set_userdata('system_logo', $file_name);

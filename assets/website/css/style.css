@@ -1148,6 +1148,20 @@ table img {
   padding: 0;
 }
 
+.navbar-brand img {
+  height: 90px;          /* fill most of the navbar height */
+  width: auto;           /* maintain aspect ratio */
+  max-height: 95px;      /* just under 100px navbar height */
+  object-fit: contain;   /* avoid stretching */
+  display: block;
+  transition: all 0.3s ease;
+}
+
+/* Optional: center vertically */
+header.main-header .navbar-brand {
+  display: flex;
+  align-items: center;
+}
 .navbar-nav {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
@@ -1800,7 +1814,11 @@ table img {
   margin-right: 20px;
 }
 .main-header.header-2 .navbar-brand img {
-  max-width: 120px;
+  max-width: 100%;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 .main-header.header-2 .navbar-nav {
   margin-right: auto;
@@ -4868,10 +4886,15 @@ td.quantity {
   }
   .navbar-brand,
   .main-header.header-2 .navbar-brand {
-    width: 120px;
+    max-width: 200px;
+    width: auto;
   }
   .main-header.header-2 .navbar-brand img {
     max-width: 100%;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
   }
   .section {
     padding: 60px 0;

@@ -66,6 +66,33 @@
                                 </div>
                             <?php } ?>
                         </div>
+
+                        <div class="col-sm-12 mb-2 col-md-4">
+                            <div class="form-group">
+                                <div class="form-label-action">
+                                    <input type="hidden" name="animated_image_old" value="<?php echo escape_output(isset($banner_section->animated_image) && $banner_section->animated_image ? $banner_section->animated_image : '')?>">
+                                    <label><?php echo lang('animated_image'); ?> (Recommended: 800x600px)</label>
+                                    
+                                </div>
+                                
+                                <table>
+                                    <tr>
+                                        <td>
+                                          <input type="file" id="animated_image" accept="image/*" name="animated_image" class="form-control">
+
+                                        </td>
+                                        <td> 
+                                        <a data-file_path="<?php echo base_url()?>uploads/banner_section/<?php echo isset($banner_section->animated_image) && $banner_section->animated_image ? $banner_section->animated_image : ''; ?>"  data-id="2" class="new-btn h-40 show_preview" href="#"><i class="fa fa-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <?php if (form_error('animated_image')) { ?>
+                                <div class="callout callout-danger my-2">
+                                    <?php echo form_error('animated_image'); ?>
+                                </div>
+                            <?php } ?>
+                        </div>
                          
 
                         <div class="col-sm-12 mb-2 col-md-4">

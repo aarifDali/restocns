@@ -90,13 +90,13 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
             </svg>
             <span><?= lang('Cart') ?></span>
           </li>
-          <?php
+          <!-- <?php
           $language = $this->session->userdata('language');
           if (! $language) {
             $language = 'English';
           }
-          ?>
-          <li class="menu-item menu-item-has-children">
+          ?> -->
+          <!-- <li class="menu-item menu-item-has-children">
             <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_9_603)">
                 <path d="M6.18125 8.3925L5.6375 10H4.25L6.5775 3.75H8.1825L10.5 10H9.04125L8.4975 8.3925H6.18125ZM8.22375 7.4725L7.375 4.945H7.31375L6.465 7.4725H8.22375Z" fill="#212121" />
@@ -119,7 +119,7 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
               endforeach;
               ?>
             </ul>
-          </li>
+          </li> -->
           <?php if (empty($login_customer)) { ?>
             <li class="menu-item menu-item-has-children">
               <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -130,7 +130,7 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
               <ul class="submenu">
               <li class="menu-item"> <a href="<?php echo base_url() . 'register'; ?>"><?php echo lang('register_as_customer'); ?></a> </li>
                 <li class="menu-item"> <a href="<?php echo base_url() . 'login'; ?>"><?php echo lang('login_as_customer'); ?></a> </li>
-                <li class="menu-item"> <a href="<?php echo base_url() . 'authentication'; ?>"><?php echo lang('login_as_admin'); ?></a> </li>
+                <!-- <li class="menu-item"> <a href="<?php echo base_url() . 'authentication'; ?>"><?php echo lang('login_as_admin'); ?></a> </li> -->
               </ul>
             </li>
           <?php } else { ?>
@@ -162,7 +162,23 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
       <div class="container">
         <div class="d-flex flex-column gap40px">
           <div class="d-flex flex-column gap20px">
-            <h1 class="title"><?php echo isset($banner_section->main_header) && $banner_section->main_header ? $banner_section->main_header : '' ?></h1>
+            <?php 
+            $main_header = isset($banner_section->main_header) && $banner_section->main_header ? $banner_section->main_header : '';
+            if ($main_header) {
+                $words = explode(' ', $main_header);
+                $word_count = count($words);
+                $half_point = ceil($word_count / 2);
+                
+                $first_half = implode(' ', array_slice($words, 0, $half_point));
+                $second_half = implode(' ', array_slice($words, $half_point));
+            ?>
+            <h1 class="banner-title-split">
+              <span class="title-top"><?php echo $first_half; ?></span>
+              <span class="title-bottom"><?php echo $second_half; ?></span>
+            </h1>
+            <?php } else { ?>
+            <h1 class="title"><?php echo $main_header; ?></h1>
+            <?php } ?>
             <p class="subtitle">
               <?php echo isset($banner_section->short_des) && $banner_section->short_des ? $banner_section->short_des : '' ?>
             </p>
@@ -170,6 +186,14 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
           <a href="<?php echo base_url() . 'online-order'; ?>" class="btn-custom primary"><?php echo lang('explore_our_menu'); ?> <i class="fa fa-caret-right"></i></a>
         </div>
       </div>
+      
+      <!-- Animated Image -->
+      <?php if (isset($banner_section->animated_image) && $banner_section->animated_image): ?>
+      <div class="banner-animated-image">
+        <img src="<?php echo base_url() ?>uploads/banner_section/<?php echo $banner_section->animated_image; ?>" 
+             alt="Animated Banner Image">
+      </div>
+      <?php endif; ?>
     </div>
   </div>
 </div>

@@ -1642,6 +1642,7 @@ $lang['invoice_file']='Invoice File';
 $lang['banner_section']='Banner Section';
 $lang['main_header']='Main Header';
 $lang['short_des']='Short Descripton';
+$lang['animated_image']='Animated Image';
 $lang['mini_logo']='Mini Logo';
 $lang['main_banner']='Main Banner';
 $lang['Website_Setting']='Website Setting';

@@ -33,6 +33,9 @@ application/logs/*
 # Sensitive configuration files
 application/config/database.php
 application/config/stripe.php
+assets/media
+images/
+uploads/
 
 # Logs
 *.log

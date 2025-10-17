@@ -44,7 +44,7 @@
                             <div class="form-group">
                                 <div class="form-label-action">
                                     <input type="hidden" name="system_logo_p" value="<?php echo escape_output($outlet_information->system_logo)?>">
-                                    <label><?php echo lang('system_logo'); ?> (Width: 191px, Height:40px )</label>
+                                    <label><?php echo lang('system_logo'); ?> (Max: 2MB, will auto-fit to header space)</label>
                                     
                                 </div>
                                 

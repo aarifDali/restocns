@@ -250,13 +250,13 @@ $current_url = current_url();
             </svg>
             <span><?php echo lang('Cart'); ?></span>
           </li>
-          <?php
+          <!-- <?php
           $language = $this->session->userdata('language');
           if (! $language) {
             $language = 'English';
           }
-          ?>
-          <li class="menu-item menu-item-has-children">
+          ?> -->
+          <!-- <li class="menu-item menu-item-has-children">
             <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_9_603)">
                 <path d="M6.18125 8.3925L5.6375 10H4.25L6.5775 3.75H8.1825L10.5 10H9.04125L8.4975 8.3925H6.18125ZM8.22375 7.4725L7.375 4.945H7.31375L6.465 7.4725H8.22375Z" fill="#212121" />
@@ -279,7 +279,7 @@ $current_url = current_url();
               endforeach;
               ?>
             </ul>
-          </li>
+          </li> -->
           <?php if (empty($login_customer)) { ?>
             <li class="menu-item menu-item-has-children">
               <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -290,7 +290,7 @@ $current_url = current_url();
               <ul class="submenu">
                 <li class="menu-item"> <a href="<?php echo base_url() . 'register'; ?>"><?php echo lang('register_as_customer'); ?></a> </li>
                 <li class="menu-item"> <a href="<?php echo base_url() . 'login'; ?>"><?php echo lang('login_as_customer'); ?></a> </li>
-                <li class="menu-item"> <a href="<?php echo base_url() . 'authentication'; ?>"><?php echo lang('login_as_admin'); ?></a> </li>
+                <!-- <li class="menu-item"> <a href="<?php echo base_url() . 'authentication'; ?>"><?php echo lang('login_as_admin'); ?></a> </li> -->
               </ul>
             </li>
           <?php } else { ?>

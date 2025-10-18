@@ -71,14 +71,14 @@
 }
 
 .carousel-title {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Gilroy", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 36px;
-  font-weight: 900;
+  font-weight: 700;
   color: #000000;
   margin-bottom: 0;
-  /* text-transform: uppercase; */
-  letter-spacing: 0.5px;
-  margin-bottom: -25px;
+  line-height: 52px;
+  letter-spacing: -1.5px;
+  margin-bottom: -27px;
 }
 
 #offer_banners_carousel {
@@ -175,6 +175,25 @@
   line-height: 1.1;
   letter-spacing: -2px;
   color: white;
+}
+
+/* Responsive Special Offers Title */
+@media only screen and (max-width: 991.98px) {
+  .carousel-title {
+    font-size: 42px;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .carousel-title {
+    font-size: 36px;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .carousel-title {
+    font-size: 30px;
+  }
 }
 
 .offer-banner-btn {

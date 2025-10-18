@@ -606,6 +606,8 @@
                             <?php endif?>
                             <li data-access="all_setting-358" class="menu_assign_class" data-menu__cid="irp_222"><a class="child-menu" href="<?php echo base_url()?>Frontend/websiteWhiteLabel">
                             <?php echo lang('website_white_label'); ?></a></li>
+                            <li data-access="all_setting-358" class="menu_assign_class" data-menu__cid="irp_223"><a class="child-menu" href="<?php echo base_url()?>Frontend/offerBanners">
+                            <?php echo lang('offer_banners'); ?></a></li>
                             
                             <li class="sub_sub">
                                     <a href="javascript:void(0)">

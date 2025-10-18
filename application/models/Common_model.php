@@ -1778,6 +1778,22 @@ class Common_model extends CI_Model {
         }
     }
 
+    /**
+     * get All Data By Company Id
+     * @access public
+     * @return object
+     * @param int
+     * @param string
+     */
+    public function getAllDataByCompanyId($company_id, $table_name) {
+        $this->db->select("*");
+        $this->db->from($table_name);
+        $this->db->where("company_id", $company_id);
+        $this->db->where("status", 1);
+        $this->db->order_by("sort_order", "ASC");
+        return $this->db->get()->result();
+    }
+
 }
 
 ?>

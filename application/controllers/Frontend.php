@@ -28,6 +28,9 @@ class Frontend extends Cl_Controller {
     }
     public function index() {
         $data = array();
+        // Get offer banners for carousel
+        $company_id = $this->session->userdata('online_selected_company') ? $this->session->userdata('online_selected_company') : 1;
+        $data['offer_banners'] = $this->Common_model->getAllDataByCompanyId($company_id, "tbl_offer_banners");
         $data['header_content'] = $this->load->view('frontend/header_section_index', $data, TRUE);
         $data['main_content'] = $this->load->view('frontend/index', $data, TRUE);
         $this->load->view('frontend/website_layout', $data);
@@ -1710,6 +1713,106 @@ class Frontend extends Cl_Controller {
                 return FALSE;
             }
         }
+    }
+
+    /**
+     * Offer Banners Management
+     * @access public
+     * @return void
+     */
+    public function offerBanners(){
+        if (!$this->session->has_userdata('user_id')) {
+            redirect('Authentication/index');
+        }
+        $company_id = $this->session->userdata('company_id');
+        
+        if (htmlspecialcharscustom($this->input->post('submit'))) {
+            $this->form_validation->set_rules('heading', lang('heading'), 'required|max_length[100]');
+            $this->form_validation->set_rules('button_text', lang('button_text'), 'required|max_length[50]');
+            $this->form_validation->set_rules('button_link', lang('button_link'), 'required|max_length[255]');
+            $this->form_validation->set_rules('banner_image', lang('banner_image'), 'callback_validate_offer_banner');
+            $this->form_validation->set_rules('sort_order', lang('sort_order'), 'required|numeric');
+            
+            if ($this->form_validation->run() == TRUE) {
+                $offer_banner = array();
+                $offer_banner['company_id'] = $company_id;
+                $offer_banner['heading'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('heading')));
+                $offer_banner['button_text'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('button_text')));
+                $offer_banner['button_link'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('button_link')));
+                $offer_banner['sort_order'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('sort_order')));
+                $offer_banner['status'] = 1;
+                
+                if ($_FILES['banner_image']['name'] != "") {
+                    $offer_banner['banner_image'] = $this->session->userdata('offer_banner_image');
+                    $this->session->unset_userdata('offer_banner_image');
+                }
+                
+                $this->Common_model->insertInformation($offer_banner, "tbl_offer_banners");
+                $this->session->set_flashdata('exception', lang('add_success'));
+                redirect('Frontend/offerBanners');
+            } else {
+                $data = array();
+                $data['offer_banners'] = $this->Common_model->getAllDataByCompanyId($company_id, "tbl_offer_banners");
+                $data['main_content'] = $this->load->view('frontend_dynamic/offer_banners', $data, TRUE);
+                $this->load->view('userHome', $data);
+            }
+        } else {
+            $data = array();
+            $data['offer_banners'] = $this->Common_model->getAllDataByCompanyId($company_id, "tbl_offer_banners");
+            $data['main_content'] = $this->load->view('frontend_dynamic/offer_banners', $data, TRUE);
+            $this->load->view('userHome', $data);
+        }
+    }
+
+    /**
+     * validate offer banner image
+     * @access public
+     * @return boolean
+     */
+    public function validate_offer_banner() {
+        if ($_FILES['banner_image']['name'] != "") {
+            $config['upload_path'] = './uploads/offer_banners';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size'] = '2000';
+            $config['encrypt_name'] = TRUE;
+            $config['detect_mime'] = TRUE;
+            $this->load->library('upload', $config);
+
+            if(createDirectory('uploads/offer_banners')){
+                if ($this->upload->do_upload("banner_image")) {
+                    $upload_info = $this->upload->data();
+                    $file_name = $upload_info['file_name'];
+                    $this->session->set_userdata('offer_banner_image', $file_name);
+                } else {
+                    $this->form_validation->set_message('validate_offer_banner', $this->upload->display_errors());
+                    return FALSE;
+                }
+            } else {
+                echo "Something went wrong";
+            }
+        }
+    }
+
+    /**
+     * Delete Offer Banner
+     * @access public
+     * @return void
+     */
+    public function deleteOfferBanner($id = '') {
+        if (!$this->session->has_userdata('user_id')) {
+            redirect('Authentication/index');
+        }
+        
+        $id = $this->custom->encrypt_decrypt($id, 'decrypt');
+        $offer_banner = $this->Common_model->getDataById($id, "tbl_offer_banners");
+        
+        if ($offer_banner && file_exists('./uploads/offer_banners/' . $offer_banner->banner_image)) {
+            unlink('./uploads/offer_banners/' . $offer_banner->banner_image);
+        }
+        
+        $this->Common_model->deleteStatusChange($id, "tbl_offer_banners");
+        $this->session->set_flashdata('exception', lang('delete_success'));
+        redirect('Frontend/offerBanners');
     }
 
 }

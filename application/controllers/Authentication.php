@@ -52,6 +52,9 @@ class Authentication extends Cl_Controller {
                     $go_online_status =  $this->session->userdata('go_online_status');  
                     if($go_online_status=="Yes"){
                         $data = array();
+                        // Get offer banners for carousel
+                        $company_id = $this->session->userdata('online_selected_company') ? $this->session->userdata('online_selected_company') : 1;
+                        $data['offer_banners'] = $this->Common_model->getAllDataByCompanyId($company_id, "tbl_offer_banners");
                         $data['header_content'] = $this->load->view('frontend/header_section_index', $data, TRUE);
                         $data['main_content'] = $this->load->view('frontend/index', $data, TRUE);
                         $this->load->view('frontend/website_layout', $data);
@@ -74,6 +77,9 @@ class Authentication extends Cl_Controller {
 
                 if(isset($company->sos_enable_online_order_frontend_website) && $company->sos_enable_online_order_frontend_website==1){
                     $data = array();
+                    // Get offer banners for carousel
+                    $company_id = $this->session->userdata('online_selected_company') ? $this->session->userdata('online_selected_company') : 1;
+                    $data['offer_banners'] = $this->Common_model->getAllDataByCompanyId($company_id, "tbl_offer_banners");
                     $data['header_content'] = $this->load->view('frontend/header_section_index', $data, TRUE);
                     $data['main_content'] = $this->load->view('frontend/index', $data, TRUE);
                     $this->load->view('frontend/website_layout', $data);
@@ -3628,6 +3634,29 @@ class Authentication extends Cl_Controller {
         }
         
         echo json_encode($response);
+    }
+
+    /**
+     * Delete Offer Banner
+     * @access public
+     * @return void
+     * @param int
+     */
+    public function deleteOfferBanner($id = '') {
+        if (!$this->session->has_userdata('user_id')) {
+            redirect('Authentication/index');
+        }
+        
+        $id = $this->custom->encrypt_decrypt($id, 'decrypt');
+        $offer_banner = $this->Common_model->getDataById($id, "tbl_offer_banners");
+        
+        if ($offer_banner && file_exists('./uploads/offer_banners/' . $offer_banner->banner_image)) {
+            unlink('./uploads/offer_banners/' . $offer_banner->banner_image);
+        }
+        
+        $this->Common_model->deleteStatusChange($id, "tbl_offer_banners");
+        $this->session->set_flashdata('exception', lang('delete_success'));
+        redirect('Frontend/offerBanners');
     }
 
  

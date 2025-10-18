@@ -9,6 +9,8 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
   <script src="<?php echo base_url(); ?>assets/website/magnific/jquery.magnific-popup.min.js"></script>
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/website/magnific/magnific-popup.css">
  
+<!-- Offer Banners Carousel Section -->
+<?php $this->view('frontend_dynamic/offer_banners_carousel') ?>
 
 <!-- About us start -->
 <div class="section">

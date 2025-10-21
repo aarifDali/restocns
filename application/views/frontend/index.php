@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Menu End -->
 
 <!-- Gallery Start -->
-<div class="section pt-5">
+<!-- <div class="section pt-5">
   <div class="container">
     <div class="section-title-wrap gallery-title d-flex justify-content-between align-items-center">
       <div>
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } ?>
     </div>
   </div>
-</div>
+</div> -->
   <!-- Gallery End -->
 
   <!-- Map Start -->

@@ -137,3 +137,34 @@ $outlet_details = getOutletById($online_selected_outlet);
   </div>
   <!-- Menu Wrapper End -->
 </div>
+
+<style>
+  .product {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+
+  .product-thumb {
+    display: block;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .product-thumb img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .product:hover .product-thumb img {
+    transform: scale(1.08);
+  }
+
+</style>

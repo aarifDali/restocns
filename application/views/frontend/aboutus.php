@@ -3,7 +3,11 @@ $company_info = getMainCompany();
 $about_us = isset($company_info->about_us) && $company_info->about_us?json_decode($company_info->about_us):'';
 $common_menu_page = isset($company_info->common_menu_page) && $company_info->common_menu_page?json_decode($company_info->common_menu_page):'';
 ?>
-
+  <section class="aboutus-banner">
+    <div class="aboutus-banner-content text-center">
+      <h1 class="aboutus-title">About Us</h1>
+    </div>
+  </section>
   <!-- About us start -->
   <div class="section about-us-page">
     <div class="container">
@@ -27,3 +31,32 @@ $common_menu_page = isset($company_info->common_menu_page) && $company_info->com
     </div>
   </div>
   <!-- About us End -->
+
+  <style>
+    .aboutus-banner {
+    background: #f8f5f0;
+    padding: 100px 0; /* Increased from 60px to 100px for more height */
+    margin-top: 80px; /* Add margin to push below fixed header */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%; /* Full width - you can change this */
+    max-width: none; /* Remove any width restrictions */
+  }
+
+  .aboutus-banner-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .aboutus-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0;
+    text-align: center;
+  }
+  </style>

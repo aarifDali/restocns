@@ -8,60 +8,47 @@ $outlet_details = getOutletById($online_selected_outlet);
 
 ?>
 <input type="hidden" id="item_add_success" value="<?php echo lang('item_add_success') ?>">
+<!-- Menu Page Banner Start -->
+<section class="menu-banner">
+  <div class="menu-banner-content text-center">
+    <h1 class="menu-title">Discover Our Signature Dishes</h1>
+  </div>
+</section>
+<!-- Menu Page Banner End -->
+
 <div class="menu_page">
   <!-- Menu Categories Start -->
   <div class="ct-menu-categories menu-filter">
     <div class="container">
-      <div class="section-title-wrap d-flex justify-content-between align-items-center">
-        <div>
-          <h2 class="title"><?php echo lang('category'); ?></h2>
-        </div>
-        <div class="d-flex justify-content-end gap-3">
-          <a href="javascript:void(0)" class="customPrevBtn">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M1.61719 9.11719C1.12891 9.60547 1.12891 10.3984 1.61719 10.8867L7.86719 17.1367C8.35547 17.625 9.14844 17.625 9.63672 17.1367C10.125 16.6484 10.125 15.8555 9.63672 15.3672L5.51562 11.25H17.5C18.1914 11.25 18.75 10.6914 18.75 10C18.75 9.30859 18.1914 8.75 17.5 8.75H5.51953L9.63281 4.63281C10.1211 4.14453 10.1211 3.35156 9.63281 2.86328C9.14453 2.375 8.35156 2.375 7.86328 2.86328L1.61328 9.11328L1.61719 9.11719Z"
-                fill="#2D2C2B" />
-            </svg>
+      <div class="category-section-centered">
+        <h2 class="category-title-centered">Menu of the Day</h2>
+        <div class="category-list-centered">
+          <!-- <a href="#" data-filter="*" class="category-item-centered active"> -->
+            <!-- <div class="category-icon-centered">
+              <img src="<?php echo base_url(); ?>assets/website/img/all.png" alt="">
+            </div> -->
+            <!-- <div class="category-info-centered">
+              <h6><?php echo lang('all'); ?></h6>
+              <p><?php echo count($get_food_menu); ?>&nbsp;<?php echo lang('foods'); ?></p>
+            </div> -->
           </a>
-          <a href="javascript:void(0)" class="customNextBtn">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M18.3828 10.8828C18.8711 10.3945 18.8711 9.60156 18.3828 9.11328L12.1328 2.86328C11.6445 2.375 10.8516 2.375 10.3633 2.86328C9.875 3.35156 9.875 4.14453 10.3633 4.63281L14.4844 8.75H2.5C1.80859 8.75 1.25 9.30859 1.25 10C1.25 10.6914 1.80859 11.25 2.5 11.25H14.4805L10.3672 15.3672C9.87891 15.8555 9.87891 16.6484 10.3672 17.1367C10.8555 17.625 11.6484 17.625 12.1367 17.1367L18.3867 10.8867L18.3828 10.8828Z"
-                fill="#2D2C2B" />
-            </svg>
-          </a>
-        </div>
-
-      </div>
-      <section class="menu-category-slider slider">
-        <a href="#" data-filter="*" class="ct-menu-category-item active">
-          <div class="menu-category-thumb">
-            <img src="<?php echo base_url(); ?>assets/website/img/all.png" alt="">
-          </div>
-          <div class="menu-category-desc">
-            <h6><?php echo lang('all'); ?></h6>
-            <p><?php echo count($get_food_menu); ?>&nbsp;<?php echo lang('foods'); ?></p>
-          </div>
-        </a>
-        <?php if ($categories) {
-          foreach ($categories as $cat) {
-        ?>
-            <a href="#" data-filter=".cat-id-<?php echo $cat->id ?>" class="ct-menu-category-item">
-              <div class="menu-category-thumb">
+          <?php if ($categories) {
+            foreach ($categories as $cat) {
+          ?>
+            <a href="#" data-filter=".cat-id-<?php echo $cat->id ?>" class="category-item-centered">
+              <!-- <div class="category-icon-centered">
                 <img src="<?php echo base_url(); ?><?php echo $cat->category_image ? "uploads/category/" . $cat->category_image : 'assets/media/default_cat.jpg'; ?>" alt="">
-              </div>
-              <div class="menu-category-desc">
+              </div> -->
+              <div class="category-info-centered">
                 <h6><?php echo $cat->category_name ?></h6>
-                <p><?php echo countFoodMenuCategory($cat->id); ?>&nbsp;<?php echo lang('foods'); ?></p>
+                <!-- <p><?php echo countFoodMenuCategory($cat->id); ?>&nbsp;<?php echo lang('foods'); ?></p> -->
               </div>
             </a>
-        <?php
-          }
-        } ?>
-      </section>
+          <?php
+            }
+          } ?>
+        </div>
+      </div>
     </div>
   </div>
   <!-- Menu Categories End -->
@@ -69,11 +56,11 @@ $outlet_details = getOutletById($online_selected_outlet);
   <!-- Menu Wrapper Start -->
   <div class="section section-padding">
     <div class="container">
-      <div class="section-title-wrap d-flex justify-content-between align-items-center">
+      <!-- <div class="section-title-wrap d-flex justify-content-between align-items-center">
         <div>
           <h2 class="title"><?php echo lang('foods'); ?></h2>
         </div>
-      </div>
+      </div> -->
       <div class="menu-container row">
 
         <!-- Product Start -->
@@ -165,6 +152,176 @@ $outlet_details = getOutletById($online_selected_outlet);
 
   .product:hover .product-thumb img {
     transform: scale(1.08);
+  }
+
+
+  .menu-banner {
+    background: #f8f5f0;
+    padding: 100px 0; /* Increased from 60px to 100px for more height */
+    margin-top: 80px; /* Add margin to push below fixed header */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%; /* Full width - you can change this */
+    max-width: none; /* Remove any width restrictions */
+  }
+
+  .menu-banner-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .menu-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Centered Category Section */
+  .category-section-centered {
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1px 20px; /* Reduced top padding to 1px, added side padding */
+  }
+
+  .category-title-centered {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .category-list-centered {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #ffc107 #f0f0f0;
+    width: 100%;
+  }
+
+  .category-list-centered::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .category-list-centered::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+  }
+
+  .category-list-centered::-webkit-scrollbar-thumb {
+    background: #ffc107;
+    border-radius: 3px;
+  }
+
+  .category-list-centered::-webkit-scrollbar-thumb:hover {
+    background: #ff8c00;
+  }
+
+  .category-item-centered {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: #fff;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    min-width: 120px;
+    flex-shrink: 0;
+    justify-content: center;
+  }
+
+  .category-item-centered:hover {
+    background: #fff3cd;
+    border-color: #ffc107;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+  }
+
+  .category-item-centered.active {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+    color: white;
+    border-color: #ffc107;
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+  }
+
+  .category-icon-centered {
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .category-icon-centered img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .category-info-centered {
+    flex: 1;
+    text-align: center;
+  }
+
+  .category-info-centered h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: inherit;
+    margin: 0 0 2px 0;
+  }
+
+  .category-info-centered p {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    color: inherit;
+    margin: 0;
+  }
+
+  /* Responsive Design for Categories */
+  @media (max-width: 768px) {
+    .category-section-centered {
+      padding: 30px 15px;
+    }
+    
+    .category-title-centered {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+    }
+    
+    .category-list-centered {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .category-item-centered {
+      padding: 12px 20px;
+      min-width: 200px;
+    }
+    
+    .category-icon-centered {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+    }
   }
 
 </style>

@@ -12,8 +12,89 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
 <!-- Offer Banners Carousel Section -->
 <?php $this->view('frontend_dynamic/offer_banners_carousel') ?>
 
+<!-- Delivery Banner Section -->
+<div class="delivery-banner-section" style="height: 70vh; background-color: #fbf7e8; position: relative; overflow: hidden;">
+  <div class="container h-100">
+    <div class="row h-100 align-items-center">
+      <div class="col-lg-6">
+        <div class="delivery-content">
+          <h1 class="delivery-heading" style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.5rem; color: #000; margin-bottom: 1rem; line-height: 1.2;">
+          Hot & Fresh Bites,<br> Straight to You!
+          </h1>
+          <p class="delivery-subheading" style="font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 1.1rem; color: #666; margin-bottom: 2rem; line-height: 1.5;">
+          From cheesy burgers to loaded wraps — delivered right to your door.
+          </p>
+          <a href="<?php echo base_url() . 'online-order'; ?>" class="btn btn-custom delivery-btn" style="background-color: #000; color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1rem; display: inline-block; transition: all 0.3s ease; border: 2px solid #000;">
+            Order Now <i class="fa fa-arrow-right" style="margin-left: 8px;"></i>
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="delivery-image" style="text-align: left; position: relative; overflow: hidden;">
+          <img id="delivery-scooter" src="<?php echo base_url(); ?>assets/media/delivery_boy_scooter.png" 
+               alt="Delivery Boy on Scooter" 
+               style="max-width: 100%; height: auto; max-height: 400px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); transform: translateX(0%); transition: transform 0.1s ease-out;">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Decorative elements -->
+  <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background-color: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+  <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background-color: rgba(255,255,255,0.08); border-radius: 50%;"></div>
+</div>
+
+<style>
+.delivery-btn:hover {
+  background-color: #333 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+  .delivery-heading {
+    font-size: 2rem !important;
+  }
+  
+  .delivery-subheading {
+    font-size: 1rem !important;
+  }
+  
+  .delivery-banner-section {
+    height: 60vh !important;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const scooter = document.getElementById('delivery-scooter');
+  const bannerSection = document.querySelector('.delivery-banner-section');
+  
+  function updateScooterPosition() {
+    const bannerRect = bannerSection.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    
+    // Calculate scroll progress through the banner section
+    const scrollProgress = Math.max(0, Math.min(1, 
+      (windowHeight - bannerRect.top) / (windowHeight + bannerRect.height)
+    ));
+    
+    // Move scooter from left (0%) to right edge (100%) based on scroll progress
+    const translateX = scrollProgress * 100; // 0% to 100%
+    scooter.style.transform = `translateX(${translateX}%)`;
+  }
+  
+  // Update position on scroll
+  window.addEventListener('scroll', updateScooterPosition);
+  
+  // Initial position
+  updateScooterPosition();
+});
+</script>
+
 <!-- About us start -->
-<div class="section">
+<!-- <div class="section">
   <div class="container">
     <div class="row align-items-center">
 
@@ -33,11 +114,11 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
 
     </div>
   </div>
-</div>
+</div> -->
 <!-- About us End -->
 
 <!-- Menu Start -->
-<div class="section section-padding pt-0">
+<!-- <div class="section section-padding pt-0">
   <div class="container">
 
     <div class="section-title-wrap section-header text-center">
@@ -87,11 +168,11 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
       <a href="<?php echo base_url() . 'online-order'; ?>" class="btn-custom"><?php echo lang('see_more'); ?> <i class="fa fa-caret-right"></i></a>
     </div>
   </div>
-</div>
+</div> -->
 <!-- Menu End -->
 
 <!-- Gallery Start -->
-<div class="section pt-0">
+<div class="section pt-5">
   <div class="container">
     <div class="section-title-wrap gallery-title d-flex justify-content-between align-items-center">
       <div>

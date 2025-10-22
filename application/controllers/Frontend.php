@@ -638,18 +638,39 @@ class Frontend extends Cl_Controller {
             $this->form_validation->set_rules('about_us_title', lang('about_us_title'), 'required|max_length[40]');
             $this->form_validation->set_rules('abous_us_heading', lang('abous_us_heading'), 'required|max_length[150]');
             $this->form_validation->set_rules('about_us_des', lang('about_us_des'), 'required');
-            $this->form_validation->set_rules('about_us_image', lang('about_us_image'), 'callback_validate_about_us_image');
+            $this->form_validation->set_rules('about_us_image_1', lang('about_us_image_1'), 'callback_validate_about_us_image_1');
+            $this->form_validation->set_rules('about_us_image_2', lang('about_us_image_2'), 'callback_validate_about_us_image_2');
+            $this->form_validation->set_rules('about_us_image_3', lang('about_us_image_3'), 'callback_validate_about_us_image_3');
             if ($this->form_validation->run() == TRUE) {
                 $about_us = array();
                 $about_us['about_us_title'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('about_us_title')));
                 $about_us['abous_us_heading'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('abous_us_heading')));
                 $about_us['about_us_des'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('about_us_des')));
-                if ($_FILES['about_us_image']['name'] != "") {
-                    $about_us['about_us_image'] = $this->session->userdata('about_us_image');
-                    $this->session->unset_userdata('about_us_image');
+                
+                // Handle image 1
+                if ($_FILES['about_us_image_1']['name'] != "") {
+                    $about_us['about_us_image_1'] = $this->session->userdata('about_us_image_1');
+                    $this->session->unset_userdata('about_us_image_1');
                 }else{
-                    $about_us['about_us_image'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('about_us_image_old')));
+                    $about_us['about_us_image_1'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('about_us_image_1_old')));
                 }
+                
+                // Handle image 2
+                if ($_FILES['about_us_image_2']['name'] != "") {
+                    $about_us['about_us_image_2'] = $this->session->userdata('about_us_image_2');
+                    $this->session->unset_userdata('about_us_image_2');
+                }else{
+                    $about_us['about_us_image_2'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('about_us_image_2_old')));
+                }
+                
+                // Handle image 3
+                if ($_FILES['about_us_image_3']['name'] != "") {
+                    $about_us['about_us_image_3'] = $this->session->userdata('about_us_image_3');
+                    $this->session->unset_userdata('about_us_image_3');
+                }else{
+                    $about_us['about_us_image_3'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('about_us_image_3_old')));
+                }
+                
                 $return['about_us']  = json_encode($about_us);
                 $this->Common_model->updateInformation($return, $company_id, "tbl_companies");
                 $this->session->set_flashdata('exception', lang('update_success'));
@@ -669,13 +690,13 @@ class Frontend extends Cl_Controller {
     }
 
     /**
-     * validate_about_us_image
+     * validate_about_us_image_1
      * @access public
      * @param no
      * @return void
      */
-    public function validate_about_us_image() {
-        if ($_FILES['about_us_image']['name'] != "") {
+    public function validate_about_us_image_1() {
+        if ($_FILES['about_us_image_1']['name'] != "") {
             $config['upload_path'] = './uploads/about_us';
             $config['allowed_types'] = 'jpg|jpeg|png|ico';
             $config['max_size'] = '1000';
@@ -685,12 +706,12 @@ class Frontend extends Cl_Controller {
 
             if(createDirectory('uploads/about_us')){
                 // Delete the old file if it exists
-                $old_file = $this->session->userdata('about_us_image');
+                $old_file = $this->session->userdata('about_us_image_1');
                 if ($old_file && file_exists($config['upload_path'] . '/' . $old_file)) {
                     unlink($config['upload_path'] . '/' . $old_file);
                 }
 
-                if ($this->upload->do_upload("about_us_image")) {
+                if ($this->upload->do_upload("about_us_image_1")) {
                     $upload_info = $this->upload->data();
                     $file_name = $upload_info['file_name'];
                     $config['image_library'] = 'gd2';
@@ -698,9 +719,91 @@ class Frontend extends Cl_Controller {
                     $config['maintain_ratio'] = false;
                     $this->load->library('image_lib', $config);
                     $this->image_lib->resize();
-                    $this->session->set_userdata('about_us_image', $file_name);
+                    $this->session->set_userdata('about_us_image_1', $file_name);
                 } else {
-                    $this->form_validation->set_message('validate_about_us_image', $this->upload->display_errors());
+                    $this->form_validation->set_message('validate_about_us_image_1', $this->upload->display_errors());
+                    return TRUE;
+                }
+            } else {
+                echo "Something went wrong";
+            }
+        }
+    }
+
+    /**
+     * validate_about_us_image_2
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function validate_about_us_image_2() {
+        if ($_FILES['about_us_image_2']['name'] != "") {
+            $config['upload_path'] = './uploads/about_us';
+            $config['allowed_types'] = 'jpg|jpeg|png|ico';
+            $config['max_size'] = '1000';
+            $config['encrypt_name'] = TRUE;
+            $config['detect_mime'] = TRUE;
+            $this->load->library('upload', $config);
+
+            if(createDirectory('uploads/about_us')){
+                // Delete the old file if it exists
+                $old_file = $this->session->userdata('about_us_image_2');
+                if ($old_file && file_exists($config['upload_path'] . '/' . $old_file)) {
+                    unlink($config['upload_path'] . '/' . $old_file);
+                }
+
+                if ($this->upload->do_upload("about_us_image_2")) {
+                    $upload_info = $this->upload->data();
+                    $file_name = $upload_info['file_name'];
+                    $config['image_library'] = 'gd2';
+                    $config['source_image'] = './uploads/about_us/' . $file_name;
+                    $config['maintain_ratio'] = false;
+                    $this->load->library('image_lib', $config);
+                    $this->image_lib->resize();
+                    $this->session->set_userdata('about_us_image_2', $file_name);
+                } else {
+                    $this->form_validation->set_message('validate_about_us_image_2', $this->upload->display_errors());
+                    return TRUE;
+                }
+            } else {
+                echo "Something went wrong";
+            }
+        }
+    }
+
+    /**
+     * validate_about_us_image_3
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function validate_about_us_image_3() {
+        if ($_FILES['about_us_image_3']['name'] != "") {
+            $config['upload_path'] = './uploads/about_us';
+            $config['allowed_types'] = 'jpg|jpeg|png|ico';
+            $config['max_size'] = '1000';
+            $config['encrypt_name'] = TRUE;
+            $config['detect_mime'] = TRUE;
+            $this->load->library('upload', $config);
+
+            if(createDirectory('uploads/about_us')){
+                // Delete the old file if it exists
+                $old_file = $this->session->userdata('about_us_image_3');
+                if ($old_file && file_exists($config['upload_path'] . '/' . $old_file)) {
+                    unlink($config['upload_path'] . '/' . $old_file);
+                }
+
+                if ($this->upload->do_upload("about_us_image_3")) {
+                    $upload_info = $this->upload->data();
+                    $file_name = $upload_info['file_name'];
+                    $config['image_library'] = 'gd2';
+                    $config['source_image'] = './uploads/about_us/' . $file_name;
+                    $config['maintain_ratio'] = false;
+                    $this->load->library('image_lib', $config);
+                    $this->image_lib->resize();
+                    $this->session->set_userdata('about_us_image_3', $file_name);
+                } else {
+                    $this->form_validation->set_message('validate_about_us_image_3', $this->upload->display_errors());
                     return TRUE;
                 }
             } else {

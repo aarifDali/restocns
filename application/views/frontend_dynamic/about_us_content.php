@@ -66,27 +66,77 @@
                     <div class="col-sm-12 mb-2 col-md-4">
                         <div class="form-group">
                             <div class="form-label-action">
-                                <input type="hidden" name="about_us_image_old" value="<?php echo isset($about_us->about_us_image) && $about_us->about_us_image ? $about_us->about_us_image : ''; ?>">
-                                <label><?php echo lang('about_us_image'); ?> (Width: 1280px, Height:1560px )</label>
+                                <input type="hidden" name="about_us_image_1_old" value="<?php echo isset($about_us->about_us_image_1) && $about_us->about_us_image_1 ? $about_us->about_us_image_1 : ''; ?>">
+                                <label><?php echo lang('about_us_image_1'); ?> (Width: 280px, Height: 440px)</label>
                                 
                             </div>
                             
                             <table>
                                 <tr>
                                     <td>
-                                    <input type="file" id="logo" accept="image/*" name="about_us_image" class="form-control">
-
-
+                                    <input type="file" id="about_us_image_1" accept="image/*" name="about_us_image_1" class="form-control">
                                     </td>
                                     <td> 
-                                    <a data-file_path="<?php echo base_url()?>uploads/about_us/<?php echo isset($about_us->about_us_image) && $about_us->about_us_image ? $about_us->about_us_image : ''; ?>"  data-id="1" class="new-btn h-40 show_preview" href="#"><i class="fa fa-eye"></i></a>
+                                    <a data-file_path="<?php echo base_url()?>uploads/about_us/<?php echo isset($about_us->about_us_image_1) && $about_us->about_us_image_1 ? $about_us->about_us_image_1 : ''; ?>"  data-id="1" class="new-btn h-40 show_preview" href="#"><i class="fa fa-eye"></i></a>
                                     </td>
                                 </tr>
                             </table>
                         </div>
-                        <?php if (form_error('about_us_image')) { ?>
+                        <?php if (form_error('about_us_image_1')) { ?>
                             <div class="callout callout-danger my-2">
-                                <?php echo form_error('about_us_image'); ?>
+                                <?php echo form_error('about_us_image_1'); ?>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    
+                    <div class="col-sm-12 mb-2 col-md-4">
+                        <div class="form-group">
+                            <div class="form-label-action">
+                                <input type="hidden" name="about_us_image_2_old" value="<?php echo isset($about_us->about_us_image_2) && $about_us->about_us_image_2 ? $about_us->about_us_image_2 : ''; ?>">
+                                <label><?php echo lang('about_us_image_2'); ?> (Width: 390px, Height: 245px)</label>
+                                
+                            </div>
+                            
+                            <table>
+                                <tr>
+                                    <td>
+                                    <input type="file" id="about_us_image_2" accept="image/*" name="about_us_image_2" class="form-control">
+                                    </td>
+                                    <td> 
+                                    <a data-file_path="<?php echo base_url()?>uploads/about_us/<?php echo isset($about_us->about_us_image_2) && $about_us->about_us_image_2 ? $about_us->about_us_image_2 : ''; ?>"  data-id="2" class="new-btn h-40 show_preview" href="#"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php if (form_error('about_us_image_2')) { ?>
+                            <div class="callout callout-danger my-2">
+                                <?php echo form_error('about_us_image_2'); ?>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    
+                    <div class="col-sm-12 mb-2 col-md-4">
+                        <div class="form-group">
+                            <div class="form-label-action">
+                                <input type="hidden" name="about_us_image_3_old" value="<?php echo isset($about_us->about_us_image_3) && $about_us->about_us_image_3 ? $about_us->about_us_image_3 : ''; ?>">
+                                <label><?php echo lang('about_us_image_3'); ?> (Width: 280px, Height: 320px)</label>
+                                
+                            </div>
+                            
+                            <table>
+                                <tr>
+                                    <td>
+                                    <input type="file" id="about_us_image_3" accept="image/*" name="about_us_image_3" class="form-control">
+                                    </td>
+                                    <td> 
+                                    <a data-file_path="<?php echo base_url()?>uploads/about_us/<?php echo isset($about_us->about_us_image_3) && $about_us->about_us_image_3 ? $about_us->about_us_image_3 : ''; ?>"  data-id="3" class="new-btn h-40 show_preview" href="#"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php if (form_error('about_us_image_3')) { ?>
+                            <div class="callout callout-danger my-2">
+                                <?php echo form_error('about_us_image_3'); ?>
                             </div>
                         <?php } ?>
                     </div>

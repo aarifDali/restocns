@@ -390,22 +390,36 @@ Popular Dishes Section
 @media only screen and (max-width: 1200px) {
   .popular-dish-item {
     flex: 0 0 calc(33.333% - 14px);
+    min-width: 250px;
   }
 }
 
 @media only screen and (max-width: 991.98px) {
   .popular-dish-item {
     flex: 0 0 calc(50% - 10px);
+    min-width: 200px;
   }
 }
 
 @media only screen and (max-width: 767.98px) {
   .popular-dish-item {
-    flex: 0 0 calc(100% - 0px);
+    flex: 0 0 100%;
+    min-width: 100%;
+    margin: 0 10px;
+  }
+  
+  .popular-dishes-carousel {
+    gap: 0;
+    padding: 0 10px;
   }
   
   .popular-dishes-section {
     padding: 60px 0;
+    overflow: hidden;
+  }
+  
+  .popular-dishes-carousel-wrapper {
+    overflow: visible;
   }
   
   .section-title-wrap {
@@ -425,6 +439,30 @@ Popular Dishes Section
   
   .popular-dishes-nav-bottom {
     margin-top: 15px;
+  }
+  
+  .customPrevBtn,
+  .customNextBtn {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .popular-dish-item {
+    margin: 0 5px;
+  }
+  
+  .popular-dishes-carousel {
+    padding: 0 5px;
+  }
+  
+  .popular-dishes-section {
+    padding: 40px 0;
+  }
+  
+  .section-title-wrap h2.title {
+    font-size: 24px;
   }
 }
 
@@ -657,10 +695,22 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (popularCarousel && prevBtn && nextBtn) {
     let currentIndex = 0;
-    const itemsPerView = 4; // Show 4 items at once
-    const totalItems = popularCarousel.children.length;
-    const maxIndex = Math.max(0, totalItems - itemsPerView);
+    let totalItems = popularCarousel.children.length;
+    let itemsPerView = getItemsPerView();
+    let maxIndex = Math.max(0, totalItems - itemsPerView);
+    let autoPlayInterval;
+    const autoPlayDelay = 4000; // 4 seconds
     
+    // Get items per view based on screen size
+    function getItemsPerView() {
+      const screenWidth = window.innerWidth;
+      if (screenWidth <= 767) return 1; // Mobile: 1 item
+      if (screenWidth <= 991) return 2; // Tablet: 2 items
+      if (screenWidth <= 1200) return 3; // Small desktop: 3 items
+      return 4; // Desktop: 4 items
+    }
+    
+    // Update carousel position
     function updateCarousel() {
       const translateX = -currentIndex * (100 / itemsPerView);
       popularCarousel.style.transform = `translateX(${translateX}%)`;
@@ -668,35 +718,76 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update button states
       prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
       nextBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+      prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+      nextBtn.style.pointerEvents = currentIndex >= maxIndex ? 'none' : 'auto';
     }
     
-    prevBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      stopAutoPlay(); // Stop auto-play when manually navigating
-      if (currentIndex > 0) {
-        currentIndex--;
+    // Auto-play functionality
+    function startAutoPlay() {
+      stopAutoPlay(); // Clear any existing interval
+      autoPlayInterval = setInterval(() => {
+        if (currentIndex < maxIndex) {
+          currentIndex++;
+        } else {
+          currentIndex = 0; // Reset to beginning
+        }
+        updateCarousel();
+      }, autoPlayDelay);
+    }
+    
+    function stopAutoPlay() {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+      }
+    }
+    
+    // Navigation functions
+    function goToNext() {
+      stopAutoPlay();
+      if (currentIndex < maxIndex) {
+        currentIndex++;
+        updateCarousel();
+      } else {
+        currentIndex = 0; // Loop to beginning
         updateCarousel();
       }
       setTimeout(startAutoPlay, 2000); // Resume auto-play after 2 seconds
+    }
+    
+    function goToPrev() {
+      stopAutoPlay();
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      } else {
+        currentIndex = maxIndex; // Loop to end
+        updateCarousel();
+      }
+      setTimeout(startAutoPlay, 2000); // Resume auto-play after 2 seconds
+    }
+    
+    // Event listeners
+    prevBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      goToPrev();
     });
     
     nextBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      stopAutoPlay(); // Stop auto-play when manually navigating
-      if (currentIndex < maxIndex) {
-        currentIndex++;
-        updateCarousel();
-      }
-      setTimeout(startAutoPlay, 2000); // Resume auto-play after 2 seconds
+      goToNext();
     });
     
     // Touch/swipe support for mobile
     let startX = 0;
     let isDragging = false;
+    let startTime = 0;
     
     popularCarousel.addEventListener('touchstart', function(e) {
       startX = e.touches[0].clientX;
+      startTime = Date.now();
       isDragging = true;
+      stopAutoPlay();
     });
     
     popularCarousel.addEventListener('touchmove', function(e) {
@@ -709,76 +800,59 @@ document.addEventListener('DOMContentLoaded', function() {
       isDragging = false;
       
       const endX = e.changedTouches[0].clientX;
+      const endTime = Date.now();
       const diffX = startX - endX;
+      const diffTime = endTime - startTime;
       
-      if (Math.abs(diffX) > 50) { // Minimum swipe distance
-        if (diffX > 0 && currentIndex < maxIndex) {
+      // Only process swipe if it's quick enough and far enough
+      if (diffTime < 300 && Math.abs(diffX) > 50) {
+        if (diffX > 0) {
           // Swipe left - next
-          currentIndex++;
-          updateCarousel();
-        } else if (diffX < 0 && currentIndex > 0) {
-          // Swipe right - previous
-          currentIndex--;
-          updateCarousel();
-        }
-      }
-    });
-    
-    // Initialize
-    updateCarousel();
-    
-    // Auto-play functionality
-    let autoPlayInterval;
-    const autoPlayDelay = 3000; // 3 seconds
-    
-    function startAutoPlay() {
-      autoPlayInterval = setInterval(() => {
-        if (currentIndex < maxIndex) {
-          currentIndex++;
-          updateCarousel();
+          goToNext();
         } else {
-          currentIndex = 0; // Reset to beginning
-          updateCarousel();
+          // Swipe right - previous
+          goToPrev();
         }
-      }, autoPlayDelay);
-    }
-    
-    function stopAutoPlay() {
-      if (autoPlayInterval) {
-        clearInterval(autoPlayInterval);
-        autoPlayInterval = null;
+      } else {
+        // Resume auto-play if no swipe
+        setTimeout(startAutoPlay, 1000);
       }
-    }
-    
-    // Start auto-play
-    startAutoPlay();
-    
-    // Pause on hover
-    popularCarousel.addEventListener('mouseenter', stopAutoPlay);
-    popularCarousel.addEventListener('mouseleave', startAutoPlay);
-    
-    // Pause on touch
-    popularCarousel.addEventListener('touchstart', stopAutoPlay);
-    popularCarousel.addEventListener('touchend', () => {
-      setTimeout(startAutoPlay, 1000); // Resume after 1 second
     });
     
     // Handle window resize
-    window.addEventListener('resize', function() {
-      // Recalculate based on screen size
-      const screenWidth = window.innerWidth;
-      let newItemsPerView = 4;
-      
-      if (screenWidth <= 1200) newItemsPerView = 3;
-      if (screenWidth <= 991) newItemsPerView = 2;
-      if (screenWidth <= 767) newItemsPerView = 1;
-      
-      const newMaxIndex = Math.max(0, totalItems - newItemsPerView);
-      if (currentIndex > newMaxIndex) {
-        currentIndex = newMaxIndex;
+    function handleResize() {
+      const newItemsPerView = getItemsPerView();
+      if (newItemsPerView !== itemsPerView) {
+        itemsPerView = newItemsPerView;
+        maxIndex = Math.max(0, totalItems - itemsPerView);
+        
+        // Adjust current index if it's out of bounds
+        if (currentIndex > maxIndex) {
+          currentIndex = maxIndex;
+        }
+        
+        updateCarousel();
       }
-      
-      updateCarousel();
+    }
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Pause on hover (desktop only)
+    if (window.innerWidth > 767) {
+      popularCarousel.addEventListener('mouseenter', stopAutoPlay);
+      popularCarousel.addEventListener('mouseleave', startAutoPlay);
+    }
+    
+    // Initialize
+    updateCarousel();
+    startAutoPlay();
+    
+    // Recalculate on orientation change (mobile)
+    window.addEventListener('orientationchange', function() {
+      setTimeout(() => {
+        handleResize();
+        startAutoPlay();
+      }, 500);
     });
   }
 });
@@ -793,7 +867,7 @@ $(document).ready(function() {
         nav: false,
         dots: false,
         autoplay: true,
-        autoplayTimeout: 4000,
+        autoplayTimeout: 2000,
         autoplayHoverPause: true,
         center: false,
         items: 3,

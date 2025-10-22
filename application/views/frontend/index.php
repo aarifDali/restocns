@@ -258,40 +258,120 @@ Best Burgers Section
   min-width: 280px;
 }
 
-.no-burgers-message {
-  text-align: center;
-  padding: 40px 20px;
-  color: #666;
-  font-style: italic;
+/* Navigation Arrows */
+.customPrevBtn,
+.customNextBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .best-burger-item {
-    flex: 0 0 calc(33.333% - 15px);
-  }
+.customPrevBtn:hover,
+.customNextBtn:hover {
+  background: var(--primary-color, #7367f0);
+  border-color: var(--primary-color, #7367f0);
 }
 
-@media (max-width: 768px) {
-  .best-burgers-section {
-    padding: 60px 0;
-  }
-  
+.customPrevBtn:hover svg path,
+.customNextBtn:hover svg path {
+  fill: white;
+}
+
+/* Responsive Best Burgers */
+@media only screen and (max-width: 1200px) {
   .best-burger-item {
-    flex: 0 0 calc(50% - 10px);
+    flex: 0 0 calc(33.333% - 14px);
     min-width: 250px;
   }
 }
 
-@media (max-width: 576px) {
+@media only screen and (max-width: 991.98px) {
   .best-burger-item {
-    flex: 0 0 calc(100% - 10px);
-    min-width: 280px;
+    flex: 0 0 calc(50% - 10px);
+    min-width: 200px;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .best-burger-item {
+    flex: 0 0 100%;
+    min-width: 100%;
+    margin: 0 10px;
+  }
+  
+  .best-burgers-carousel {
+    gap: 0;
+    padding: 0 10px;
+  }
+  
+  .best-burgers-section {
+    padding: 60px 0;
+    overflow: hidden;
+  }
+  
+  .best-burgers-carousel-wrapper {
+    overflow: visible;
+  }
+  
+  .section-title-wrap {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .best-burgers-see-all {
+    align-self: flex-end;
+  }
+  
+  .see-all-btn {
+    padding: 6px 16px;
+    font-size: 13px;
   }
   
   .best-burgers-nav-bottom {
-    justify-content: center;
+    margin-top: 15px;
   }
+  
+  .customPrevBtn,
+  .customNextBtn {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .best-burger-item {
+    margin: 0 5px;
+  }
+  
+  .best-burgers-carousel {
+    padding: 0 5px;
+  }
+  
+  .best-burgers-section {
+    padding: 40px 0;
+  }
+  
+  .section-title-wrap h2.title {
+    font-size: 24px;
+  }
+}
+
+/* No Burgers Message */
+.no-burgers-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 18px;
+  font-style: italic;
 }
 </style>
 
@@ -304,10 +384,22 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (burgersCarousel && prevBtn && nextBtn) {
     let currentIndex = 0;
-    const itemsPerView = 4; // Show 4 items at once
-    const totalItems = burgersCarousel.children.length;
-    const maxIndex = Math.max(0, totalItems - itemsPerView);
+    let totalItems = burgersCarousel.children.length;
+    let itemsPerView = getItemsPerView();
+    let maxIndex = Math.max(0, totalItems - itemsPerView);
+    let autoPlayInterval;
+    const autoPlayDelay = 4000; // 4 seconds
     
+    // Get items per view based on screen size
+    function getItemsPerView() {
+      const screenWidth = window.innerWidth;
+      if (screenWidth <= 767) return 1; // Mobile: 1 item
+      if (screenWidth <= 991) return 2; // Tablet: 2 items
+      if (screenWidth <= 1200) return 3; // Small desktop: 3 items
+      return 4; // Desktop: 4 items
+    }
+    
+    // Update carousel position
     function updateCarousel() {
       const translateX = -currentIndex * (100 / itemsPerView);
       burgersCarousel.style.transform = `translateX(${translateX}%)`;
@@ -315,31 +407,76 @@ document.addEventListener('DOMContentLoaded', function() {
       // Update button states
       prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
       nextBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+      prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+      nextBtn.style.pointerEvents = currentIndex >= maxIndex ? 'none' : 'auto';
     }
     
-    prevBtn.addEventListener('click', function(e) {
-      e.preventDefault();
+    // Auto-play functionality
+    function startAutoPlay() {
+      stopAutoPlay(); // Clear any existing interval
+      autoPlayInterval = setInterval(() => {
+        if (currentIndex < maxIndex) {
+          currentIndex++;
+        } else {
+          currentIndex = 0; // Reset to beginning
+        }
+        updateCarousel();
+      }, autoPlayDelay);
+    }
+    
+    function stopAutoPlay() {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+      }
+    }
+    
+    // Navigation functions
+    function goToNext() {
+      stopAutoPlay();
+      if (currentIndex < maxIndex) {
+        currentIndex++;
+        updateCarousel();
+      } else {
+        currentIndex = 0; // Loop to beginning
+        updateCarousel();
+      }
+      setTimeout(startAutoPlay, 2000); // Resume auto-play after 2 seconds
+    }
+    
+    function goToPrev() {
+      stopAutoPlay();
       if (currentIndex > 0) {
         currentIndex--;
         updateCarousel();
+      } else {
+        currentIndex = maxIndex; // Loop to end
+        updateCarousel();
       }
+      setTimeout(startAutoPlay, 2000); // Resume auto-play after 2 seconds
+    }
+    
+    // Event listeners
+    prevBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      goToPrev();
     });
     
     nextBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (currentIndex < maxIndex) {
-        currentIndex++;
-        updateCarousel();
-      }
+      goToNext();
     });
     
     // Touch/swipe support for mobile
     let startX = 0;
     let isDragging = false;
+    let startTime = 0;
     
     burgersCarousel.addEventListener('touchstart', function(e) {
       startX = e.touches[0].clientX;
+      startTime = Date.now();
       isDragging = true;
+      stopAutoPlay();
     });
     
     burgersCarousel.addEventListener('touchmove', function(e) {
@@ -352,20 +489,60 @@ document.addEventListener('DOMContentLoaded', function() {
       isDragging = false;
       
       const endX = e.changedTouches[0].clientX;
+      const endTime = Date.now();
       const diffX = startX - endX;
+      const diffTime = endTime - startTime;
       
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0 && currentIndex < maxIndex) {
-          currentIndex++;
-        } else if (diffX < 0 && currentIndex > 0) {
-          currentIndex--;
+      // Only process swipe if it's quick enough and far enough
+      if (diffTime < 300 && Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          // Swipe left - next
+          goToNext();
+        } else {
+          // Swipe right - previous
+          goToPrev();
         }
-        updateCarousel();
+      } else {
+        // Resume auto-play if no swipe
+        setTimeout(startAutoPlay, 1000);
       }
     });
     
-    // Initial setup
+    // Handle window resize
+    function handleResize() {
+      const newItemsPerView = getItemsPerView();
+      if (newItemsPerView !== itemsPerView) {
+        itemsPerView = newItemsPerView;
+        maxIndex = Math.max(0, totalItems - itemsPerView);
+        
+        // Adjust current index if it's out of bounds
+        if (currentIndex > maxIndex) {
+          currentIndex = maxIndex;
+        }
+        
+        updateCarousel();
+      }
+    }
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Pause on hover (desktop only)
+    if (window.innerWidth > 767) {
+      burgersCarousel.addEventListener('mouseenter', stopAutoPlay);
+      burgersCarousel.addEventListener('mouseleave', startAutoPlay);
+    }
+    
+    // Initialize
     updateCarousel();
+    startAutoPlay();
+    
+    // Recalculate on orientation change (mobile)
+    window.addEventListener('orientationchange', function() {
+      setTimeout(() => {
+        handleResize();
+        startAutoPlay();
+      }, 500);
+    });
   }
 });
 </script>

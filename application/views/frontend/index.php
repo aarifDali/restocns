@@ -12,77 +12,341 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
 <!-- Offer Banners Carousel Section -->
 <?php $this->view('frontend_dynamic/offer_banners_carousel') ?>
 
-<!-- Delivery Banner Section -->
-<div class="delivery-banner-section" style="height: 70vh; background-color: #fbf7e8; position: relative; overflow: hidden;">
-  <div class="container h-100">
-    <div class="row h-100 align-items-center">
-      <div class="col-lg-4">
-        <div class="delivery-content">
-          <h1 class="delivery-heading" style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.5rem; color: #000; margin-bottom: 1rem; line-height: 1.2;">
-          Hot & Fresh Bites,<br> Straight to You!
-          </h1>
-          <p class="delivery-subheading" style="font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 1.1rem; color: #666; margin-bottom: 2rem; line-height: 1.5;">
-          From cheesy burgers to loaded wraps — delivered right to your door.
-          </p>
-          <a href="<?php echo base_url() . 'online-order'; ?>" class="btn btn-custom delivery-btn" style="background-color: #000; color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1rem; display: inline-block; transition: all 0.3s ease; border: 2px solid #000;">
-            Order Now <i class="fa fa-arrow-right" style="margin-left: 8px;"></i>
-          </a>
+<!-- Animated Delivery Banner Section -->
+<div class="animated-delivery-banner" id="animated-delivery-banner">
+  <div class="banner-container">
+    <!-- Left Content Section -->
+    <div class="banner-left-content">
+      <h1 class="banner-heading">Craving Solved, <br>Delivered Hot!</h1>
+      <p class="banner-description">From cheesy wraps to saucy burgers — we bring your favorites straight to you</p>
+      <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn">ORDER NOW</a>
+    </div>
+    
+    <!-- Center Scooter Animation -->
+    <div class="banner-center-scooter">
+      <div class="scooter-container" id="scooter-container">
+        <img id="animated-scooter" src="<?php echo base_url(); ?>assets/media/delivery_boy_scooter.png" 
+             alt="Delivery Boy on Scooter" class="scooter-image">
+        <div class="speech-bubble">
+          <span class="bubble-text">pizza delivery</span>
         </div>
-      </div>
-      <div class="col-lg-8">
-        <div class="delivery-image" style="text-align: left; position: relative; overflow: hidden;">
-          <img id="delivery-scooter" src="<?php echo base_url(); ?>assets/media/delivery_boy_scooter.png" 
-               alt="Delivery Boy on Scooter" 
-               style="max-width: 100%; height: auto; max-height: 400px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); transform: translateX(0%); transition: transform 0.1s ease-out;">
+        <div class="motion-lines">
+          <div class="motion-line"></div>
+          <div class="motion-line"></div>
+          <div class="motion-line"></div>
         </div>
       </div>
     </div>
+    
+    <!-- Right Content Section -->
+    <div class="banner-right-content">
+      <h1 class="banner-heading">Hot & Fresh Bites,<br>Straight to You!</h1>
+      <p class="banner-description">From cheesy burgers to loaded wraps — delivered right to your door.</p>
+      <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn">ORDER NOW</a>
+    </div>
   </div>
-  
-  <!-- Decorative elements -->
-  <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background-color: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-  <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background-color: rgba(255,255,255,0.08); border-radius: 50%;"></div>
 </div>
 
 <style>
-.delivery-btn:hover {
-  background-color: #333 !important;
+/* =========================
+Animated Delivery Banner
+========================= */
+
+.animated-delivery-banner {
+  height: 70vh;
+  background-color: #fbf7e8;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.banner-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 2rem;
+}
+
+/* Left and Right Content Sections */
+.banner-left-content,
+.banner-right-content {
+  flex: 1;
+  max-width: 30%;
+  z-index: 2;
+}
+
+.banner-left-content {
+  padding-left: 3rem;
+}
+
+.banner-heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: #000;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.banner-description {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.banner-order-btn {
+  background: linear-gradient(135deg, #ffe100, #f71e1e);
+  color: #fff;
+  padding: 12px 30px;
+  border-radius: 7px;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.banner-order-btn:hover {
+  background: linear-gradient(135deg, #e55a2b, #e8821a);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Center Scooter Animation */
+.banner-center-scooter {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.scooter-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.scooter-image {
+  max-width: 400px;
+  max-height: 400px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+  transition: transform 0.1s ease-out;
+  z-index: 2;
+}
+
+/* Speech Bubble */
+.speech-bubble {
+  position: absolute;
+  top: -60px;
+  right: -20px;
+  background-color: #fbf7e8;
+  border: 2px solid #ff6b35;
+  border-radius: 20px;
+  padding: 8px 16px;
+  z-index: 3;
+  animation: bubbleFloat 2s ease-in-out infinite;
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ff6b35;
+}
+
+.bubble-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #ff6b35;
+  font-style: italic;
+}
+
+/* Motion Lines */
+.motion-lines {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.motion-line {
+  width: 40px;
+  height: 3px;
+  background-color: #fff;
+  margin: 8px 0;
+  border-radius: 2px;
+  animation: motionLine 1.5s ease-in-out infinite;
+}
+
+.motion-line:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.motion-line:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Animations */
+@keyframes bubbleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes motionLine {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .banner-heading {
+    font-size: 2rem;
+  }
+  
+  .banner-description {
+    font-size: 0.9rem;
+  }
+  
+  .scooter-image {
+    max-width: 300px;
+    max-height: 300px;
+  }
 }
 
 @media (max-width: 768px) {
-  .delivery-heading {
-    font-size: 2rem !important;
+  .animated-delivery-banner {
+    height: 60vh;
   }
   
-  .delivery-subheading {
-    font-size: 1rem !important;
+  .banner-container {
+    flex-direction: column;
+    padding: 2rem 1rem;
   }
   
-  .delivery-banner-section {
-    height: 60vh !important;
+  .banner-left-content,
+  .banner-right-content {
+    max-width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .banner-center-scooter {
+    position: relative;
+    order: 2;
+    height: 200px;
+  }
+  
+  .banner-heading {
+    font-size: 1.8rem;
+  }
+  
+  .banner-description {
+    font-size: 0.85rem;
+  }
+  
+  .scooter-image {
+    max-width: 250px;
+    max-height: 250px;
+  }
+  
+  .speech-bubble {
+    top: -50px;
+    right: -10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-heading {
+    font-size: 1.5rem;
+  }
+  
+  .banner-description {
+    font-size: 0.8rem;
+  }
+  
+  .banner-order-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .scooter-image {
+    max-width: 200px;
+    max-height: 200px;
   }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const scooter = document.getElementById('delivery-scooter');
-  const bannerSection = document.querySelector('.delivery-banner-section');
+  const scooter = document.getElementById('animated-scooter');
+  const bannerSection = document.getElementById('animated-delivery-banner');
+  const scooterContainer = document.getElementById('scooter-container');
   
   function updateScooterPosition() {
     const bannerRect = bannerSection.getBoundingClientRect();
     const windowHeight = window.innerHeight;
+    const bannerHeight = bannerRect.height;
     
     // Calculate scroll progress through the banner section
-    const scrollProgress = Math.max(0, Math.min(1, 
-      (windowHeight - bannerRect.top) / (windowHeight + bannerRect.height)
-    ));
     
-    // Move scooter from 1/3 position (33.33%) to right edge (100%) based on scroll progress
-    const translateX = 33.33 + (scrollProgress * 66.67); // 33.33% to 100%
-    scooter.style.transform = `translateX(${translateX}%)`;
+
+    const scrollProgress = Math.min(Math.max(
+      1 - bannerRect.top / windowHeight, 0
+    ), 1);
+
+    
+    
+    const translateX = -50 + scrollProgress * 80; 
+    scooterContainer.style.transform = `translateX(${translateX}%)`;
+    
+    // Add slight vertical movement for more dynamic effect
+    const verticalOffset = Math.sin(scrollProgress * Math.PI) * 10;
+    scooterContainer.style.transform += ` translateY(${verticalOffset}px)`;
   }
   
   // Update position on scroll
@@ -90,6 +354,33 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initial position
   updateScooterPosition();
+  
+  // Add continuous horizontal movement animation
+  let animationId;
+  let startTime = null;
+  
+  function animateScooter(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+    
+    // Gentle horizontal sway animation
+    const sway = Math.sin(elapsed * 0.001) * 5;
+    if (scooter) {
+      scooter.style.transform = `translateX(${sway}px)`;
+    }
+    
+    animationId = requestAnimationFrame(animateScooter);
+  }
+  
+  // Start continuous animation
+  animateScooter();
+  
+  // Clean up animation on page unload
+  window.addEventListener('beforeunload', function() {
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+    }
+  });
 });
 </script>
 

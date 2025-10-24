@@ -26,7 +26,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Inter", serif;
+  font-family: "Poppins", sans-serif;
   color: var(--heading-color);
 }
 
@@ -612,9 +612,10 @@ h6 {
 }
 
 .product .product-desc h4 a {
+  font-family: "Poppins", sans-serif;
   font-style: normal;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 15px;
   line-height: 24px;
   color: var(--heading-color);
 }
@@ -697,13 +698,13 @@ h6 {
 }
 
 .product-single .title {
-  margin-right: 0;
+  font-family: "Poppins", sans-serif;
   font-style: normal;
-  font-weight: 700;
-  font-size: 50px;
-  line-height: 61px;
-  color: var(--heading-color);
-  margin-bottom: 0;
+  font-weight: 600;
+  font-size: 2.5rem;
+  line-height: 28px;
+  color: var(--heading-color, #2d2c2b);
+  margin-bottom: 1rem;
 }
 
 .product-single .product_description {
@@ -717,9 +718,10 @@ h6 {
 .product-single .product-price {
   font-style: normal;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 26px;
   line-height: 29px;
-  color: var(--secondary-color);
+  color: #fbc226;
+  font-family: "Poppins", sans-serif;
 }
 
 .related-products .product .product-thumb img {

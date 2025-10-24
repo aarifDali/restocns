@@ -19,7 +19,7 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
     <div class="banner-left-content">
       <h1 class="banner-heading">Craving Solved, <br>Delivered Hot!</h1>
       <p class="banner-description">From cheesy wraps to saucy burgers — we bring your favorites straight to you</p>
-      <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn">ORDER NOW</a>
+      <!-- <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn">ORDER NOW</a> -->
     </div>
     
     <!-- Center Scooter Animation -->
@@ -27,14 +27,18 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
       <div class="scooter-container" id="scooter-container">
         <img id="animated-scooter" src="<?php echo base_url(); ?>assets/media/delivery_boy_scooter.png" 
              alt="Delivery Boy on Scooter" class="scooter-image">
-        <div class="speech-bubble">
+        <!-- <div class="speech-bubble">
           <span class="bubble-text">pizza delivery</span>
-        </div>
+        </div> -->
         <div class="motion-lines">
           <div class="motion-line"></div>
           <div class="motion-line"></div>
           <div class="motion-line"></div>
         </div>
+      </div>
+      <!-- Single Order Now Button Under Scooter -->
+      <div class="center-order-btn-container">
+        <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn center-order-btn">ORDER NOW</a>
       </div>
     </div>
     
@@ -42,15 +46,13 @@ $explore_menu_section = isset($company_info->explore_menu_section) && $company_i
     <div class="banner-right-content">
       <h1 class="banner-heading">Hot & Fresh Bites,<br>Straight to You!</h1>
       <p class="banner-description">From cheesy burgers to loaded wraps — delivered right to your door.</p>
-      <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn">ORDER NOW</a>
+      <!-- <a href="<?php echo base_url() . 'online-order'; ?>" class="banner-order-btn">ORDER NOW</a> -->
     </div>
   </div>
 </div>
 
 <style>
-/* =========================
-Animated Delivery Banner
-========================= */
+/* Animated Delivery Banner */
 
 .animated-delivery-banner {
   height: 70vh;
@@ -136,9 +138,17 @@ Animated Delivery Banner
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 1;
+}
+
+/* Desktop only - add padding for better spacing */
+@media (min-width: 769px) {
+  .banner-center-scooter {
+    padding: 2rem 0;
+  }
 }
 
 .scooter-container {
@@ -148,6 +158,25 @@ Animated Delivery Banner
   justify-content: center;
   width: 100%;
   height: 100%;
+}
+
+/* Center Order Button Container */
+.center-order-btn-container {
+  margin-top: 2rem;
+  z-index: 3;
+}
+
+/* Desktop only - add bottom spacing */
+@media (min-width: 769px) {
+  .center-order-btn-container {
+    margin-bottom: 2rem;
+  }
+}
+
+.center-order-btn {
+  font-size: 1.1rem;
+  padding: 14px 35px;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
 }
 
 .scooter-image {
@@ -260,45 +289,90 @@ Animated Delivery Banner
 
 @media (max-width: 768px) {
   .animated-delivery-banner {
-    height: 60vh;
+    height: auto;
+    min-height: 50vh;
+    padding: 1.5rem 1rem;
   }
-  
+
   .banner-container {
     flex-direction: column;
-    padding: 2rem 1rem;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0;
   }
-  
+
   .banner-left-content,
   .banner-right-content {
     max-width: 100%;
     text-align: center;
-    margin-bottom: 2rem;
+    margin: 0;
+    padding: 0 1rem;
   }
-  
+
+  .banner-right-content {
+    margin-bottom: 1rem;
+  }
+
+  /* --- Make the scooter static and centered --- */
   .banner-center-scooter {
     position: relative;
+    width: 100%;
+    height: auto;
     order: 2;
-    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
   }
-  
-  .banner-heading {
-    font-size: 1.8rem;
+
+  .scooter-container {
+    position: relative;
   }
-  
-  .banner-description {
-    font-size: 0.85rem;
-  }
-  
+
   .scooter-image {
     max-width: 250px;
     max-height: 250px;
+    transform: none !important;
+    animation: none !important;
   }
-  
-  .speech-bubble {
-    top: -50px;
-    right: -10px;
+
+  /* Disable animation-related elements */
+  .speech-bubble,
+  .motion-lines {
+    display: none;
+  }
+
+  /* Headings and text */
+  .banner-heading {
+    font-size: 1.6rem;
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  .banner-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .banner-order-btn {
+    font-size: 0.9rem;
+    padding: 10px 24px;
+  }
+
+  .center-order-btn-container {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .center-order-btn {
+    font-size: 1rem;
+    padding: 12px 30px;
   }
 }
+
 
 @media (max-width: 480px) {
   .banner-heading {
@@ -317,6 +391,15 @@ Animated Delivery Banner
   .scooter-image {
     max-width: 200px;
     max-height: 200px;
+  }
+
+  .center-order-btn-container {
+    margin-top: 1rem;
+  }
+
+  .center-order-btn {
+    font-size: 0.9rem;
+    padding: 10px 25px;
   }
 }
 </style>

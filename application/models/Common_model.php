@@ -317,6 +317,9 @@ class Common_model extends CI_Model {
         if ($table_name == "tbl_food_menus") {
             $where['parent_id'] = 0;
         }
+        // Note: For tbl_food_menu_categories, we get ALL categories (including subcategories)
+        // This is correct for food items which can be assigned to any category
+        // For category management, use getAllCategoriesForManagement() instead
     
         $language_manifesto = $this->session->userdata('language_manifesto');
     
@@ -463,6 +466,176 @@ class Common_model extends CI_Model {
         $this->db->where('tbl_kitchen_categories.del_status', 'Live');
         return $this->db->get()->result();
     }
+    /**
+     * Get all categories including hierarchical structure
+     * @access public
+     * @return object
+     * @param int
+     */
+    public function getAllCategoriesWithHierarchy($company_id, $parent_id = 0) {
+        $this->db->select('*');
+        $this->db->from('tbl_food_menu_categories');
+        $this->db->where('company_id', $company_id);
+        $this->db->where('parent_id', $parent_id);
+        $this->db->where('del_status', 'Live');
+        $this->db->order_by('order_by', 'ASC');
+        $this->db->order_by('category_name', 'ASC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Get all categories for management (top-level only with hierarchy display)
+     * Used in category management screens
+     * @access public
+     * @return object
+     * @param int
+     */
+    public function getAllCategoriesForManagement($company_id) {
+        $this->db->select('*');
+        $this->db->from('tbl_food_menu_categories');
+        $this->db->where('company_id', $company_id);
+        $this->db->where('del_status', 'Live');
+        $this->db->order_by('order_by', 'ASC');
+        $this->db->order_by('category_name', 'ASC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Get all categories with hierarchy display (for dropdowns in food items)
+     * Includes parent category name in display
+     * @access public
+     * @return object
+     * @param int
+     */
+    public function getAllCategoriesWithParentNames($company_id) {
+        $this->db->select('c1.*, c2.category_name as parent_category_name');
+        $this->db->from('tbl_food_menu_categories c1');
+        $this->db->join('tbl_food_menu_categories c2', 'c1.parent_id = c2.id', 'left');
+        $this->db->where('c1.company_id', $company_id);
+        $this->db->where('c1.del_status', 'Live');
+        $this->db->order_by('c1.parent_id', 'ASC');
+        $this->db->order_by('c1.order_by', 'ASC');
+        $this->db->order_by('c1.category_name', 'ASC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Get child categories for a given parent category
+     * @access public
+     * @return object
+     * @param int
+     */
+    public function getChildCategories($parent_id) {
+        $this->db->select('*');
+        $this->db->from('tbl_food_menu_categories');
+        $this->db->where('parent_id', $parent_id);
+        $this->db->where('del_status', 'Live');
+        $this->db->order_by('order_by', 'ASC');
+        $this->db->order_by('category_name', 'ASC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Get all categories for dropdown (excluding current category to prevent circular reference)
+     * @access public
+     * @return object
+     * @param int
+     * @param int (current category id to exclude)
+     */
+    public function getCategoriesForDropdown($company_id, $exclude_id = 0, $parent_id = 0) {
+        $this->db->select('*');
+        $this->db->from('tbl_food_menu_categories');
+        $this->db->where('company_id', $company_id);
+        $this->db->where('parent_id', $parent_id);
+        $this->db->where('del_status', 'Live');
+        if ($exclude_id > 0) {
+            $this->db->where('id !=', $exclude_id);
+        }
+        $this->db->order_by('category_name', 'ASC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Get category path (breadcrumb) for a category
+     * @access public
+     * @return array
+     * @param int
+     */
+    public function getCategoryPath($category_id) {
+        $path = array();
+        $current_id = $category_id;
+        
+        while ($current_id > 0) {
+            $category = $this->getDataById($current_id, 'tbl_food_menu_categories');
+            if (!$category) break;
+            
+            $path[] = $category;
+            $current_id = isset($category->parent_id) ? $category->parent_id : 0;
+        }
+        
+        return array_reverse($path); // Return from root to current
+    }
+
+    /**
+     * Check if a category can be set as parent (prevents circular reference)
+     * @access public
+     * @return bool
+     * @param int (current category id)
+     * @param int (proposed parent id)
+     */
+    public function canBeParent($current_id, $proposed_parent_id) {
+        // Cannot be its own parent
+        if ($current_id == $proposed_parent_id) {
+            return false;
+        }
+        
+        // Check if proposed parent is a descendant of current category
+        $descendants = $this->getAllDescendants($current_id);
+        foreach ($descendants as $descendant) {
+            if ($descendant->id == $proposed_parent_id) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Get all descendants of a category (recursive)
+     * @access public
+     * @return array
+     * @param int
+     */
+    public function getAllDescendants($parent_id) {
+        $descendants = array();
+        $children = $this->getChildCategories($parent_id);
+        
+        foreach ($children as $child) {
+            $descendants[] = $child;
+            $child_descendants = $this->getAllDescendants($child->id);
+            $descendants = array_merge($descendants, $child_descendants);
+        }
+        
+        return $descendants;
+    }
+
+    /**
+     * Check if category has associated food items
+     * @access public
+     * @return bool
+     * @param int
+     */
+    public function checkCategoryHasItems($category_id) {
+        $this->db->select('id');
+        $this->db->from('tbl_food_menus');
+        $this->db->where('category_id', $category_id);
+        $this->db->where('del_status', 'Live');
+        $this->db->limit(1);
+        $result = $this->db->get();
+        
+        return $result->num_rows() > 0;
+    }
+
     public function getAllViaPanel() {
         $company_id = $this->session->userdata('company_id');
         $this->db->select('*');

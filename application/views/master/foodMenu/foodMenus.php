@@ -48,8 +48,21 @@
                                 <span><?php echo sizeof($foodMenus)?></span>
                             </div>
                         </div> 
-                        <?php foreach ($foodMenuCategories as $value) { ?>
-                        <div class="class_category" data-name="<?php echo $value->category_name?>" data-id="<?php echo $value->id?>">
+                        <?php 
+                        foreach ($foodMenuCategories as $value) { 
+                            // Get all descendant category IDs for this category
+                            $descendant_ids = array($value->id);
+                            $children = $this->Common_model->getChildCategories($value->id);
+                            foreach($children as $child) {
+                                $descendant_ids[] = $child->id;
+                                $grandchildren = $this->Common_model->getChildCategories($child->id);
+                                foreach($grandchildren as $grandchild) {
+                                    $descendant_ids[] = $grandchild->id;
+                                }
+                            }
+                            $descendant_ids_str = implode(',', $descendant_ids);
+                        ?>
+                        <div class="class_category" data-name="<?php echo $value->category_name?>" data-id="<?php echo $value->id?>" data-descendants="<?php echo $descendant_ids_str?>">
                             <div class="d-flex justify-content-center align-items-center flex-column">
                                 <img class="cate_img" src="<?= base_url() . "uploads/category/" . $value->category_image ?>" alt=""> 
                                 <p>

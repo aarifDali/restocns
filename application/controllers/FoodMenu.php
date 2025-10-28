@@ -100,10 +100,13 @@ class FoodMenu extends Cl_Controller {
                 $data = array();
 
                 $data['foodMenus'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_food_menus");
-                $data['foodMenuCategories'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_food_menu_categories");
+                
+                $data['foodMenuCategories'] = $this->Common_model->getAllCategoriesWithHierarchy($company_id, 0);
             
                     foreach($data['foodMenuCategories'] as $key=>$value){
-                        $total_counter = getTotalFoodMenu($value->id);
+                        
+                        $category_ids = $this->getCategoryWithDescendants($value->id);
+                        $total_counter = getTotalFoodMenuByCategories($category_ids);
                         $data['foodMenuCategories'][$key]->total_item = $total_counter;
                     }
                 $data['main_content'] = $this->load->view('master/foodMenu/foodMenus', $data, TRUE);
@@ -113,10 +116,13 @@ class FoodMenu extends Cl_Controller {
             $data = array();
             $data['foodMenus'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_food_menus");
              
-            $data['foodMenuCategories'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_food_menu_categories");
+            
+            $data['foodMenuCategories'] = $this->Common_model->getAllCategoriesWithHierarchy($company_id, 0);
             
             foreach($data['foodMenuCategories'] as $key1=>$value){
-                $total_counter = getTotalFoodMenu($value->id);
+                
+                $category_ids = $this->getCategoryWithDescendants($value->id);
+                $total_counter = getTotalFoodMenuByCategories($category_ids);
                 $data['foodMenuCategories'][$key1]->total_item = $total_counter;
             }
             $data['main_content'] = $this->load->view('master/foodMenu/foodMenus', $data, TRUE);
@@ -1158,6 +1164,28 @@ class FoodMenu extends Cl_Controller {
             $this->session->set_flashdata('exception_err', 'File is required');
         }
         redirect('foodMenu/uploadFoodMenuIngredients');
+    }
+
+    /**
+     * Get category ID and all its descendant category IDs
+     * @access private
+     * @return array
+     * @param int
+     */
+    private function getCategoryWithDescendants($category_id) {
+        $category_ids = array($category_id);
+        
+        // Get direct children
+        $children = $this->Common_model->getChildCategories($category_id);
+        
+        // Recursively get all descendants
+        foreach ($children as $child) {
+            $category_ids[] = $child->id;
+            $descendants = $this->getCategoryWithDescendants($child->id);
+            $category_ids = array_merge($category_ids, $descendants);
+        }
+        
+        return array_unique($category_ids);
     }
 
 }

@@ -2,6 +2,7 @@ $(function() {
    
       $(document).on('click', '.class_category', function() {
            let this_id = $(this).attr("data-id");
+           let descendants_str = $(this).attr("data-descendants");
   
            let name = $(this).attr("data-name");
            let total_item = $(this).find("span").text();
@@ -13,8 +14,14 @@ $(function() {
            if(this_id=="all"){
               $(".menu-item-custom").show(200);
            }else{
+              
+              let descendant_ids = descendants_str ? descendants_str.split(',') : [this_id];
               $(".menu-item-custom").hide();
-              $(".cat_"+this_id).show(200);
+              
+              
+              descendant_ids.forEach(function(cat_id) {
+                  $(".cat_" + cat_id.trim()).show(200);
+              });
            }
       });
 

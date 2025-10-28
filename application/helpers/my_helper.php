@@ -1543,6 +1543,30 @@ function getTotalFoodMenu($category_id) {
     $CI->db->where('parent_id', '0');
     $CI->db->where('del_status', 'Live');
     $query_result = $CI->db->get();
+    return $query_result->row()->total_item;
+}
+
+/**
+ * Get total food menu count by multiple category IDs (including subcategories)
+ * @access public
+ * @return int
+ * @param array
+ */
+function getTotalFoodMenuByCategories($category_ids) {
+    if (empty($category_ids)) {
+        return 0;
+    }
+    
+    $CI = & get_instance();
+    $company_id = $CI->session->userdata('company_id');
+    
+    $CI->db->select('count(id) as total_item');
+    $CI->db->from('tbl_food_menus');
+    $CI->db->where_in('category_id', $category_ids);
+    $CI->db->where('company_id', $company_id);
+    $CI->db->where('parent_id', '0');
+    $CI->db->where('del_status', 'Live');
+    $query_result = $CI->db->get();
     $row = $query_result->row();
     if($row){
         return $row->total_item;
@@ -2526,7 +2550,7 @@ function exploreItemForAdminPanel($outlet_id) {
         return false;
     }
 }
-function getFoodMenuCategory() { 
+function getFoodMenuCategory($parent_id = 0) { 
     $company_id = 1;
     $CI = & get_instance();
 
@@ -2535,7 +2559,7 @@ function getFoodMenuCategory() {
         $company_id = $CI->session->userdata('online_selected_company');  
     }
 
-    $ig_information = $CI->db->query("SELECT * FROM tbl_food_menu_categories WHERE `del_status` = 'Live' AND `company_id`='$company_id'")->result();
+    $ig_information = $CI->db->query("SELECT * FROM tbl_food_menu_categories WHERE `del_status` = 'Live' AND `company_id`='$company_id' AND `parent_id` = '$parent_id' ORDER BY `order_by` ASC, `category_name` ASC")->result();
     return $ig_information;
 }
 function getModifiersForMenuPage() {
@@ -2562,6 +2586,19 @@ function countFoodMenuCategory($id){
     $online_selected_outlet = $CI->session->userdata('online_selected_outlet');
     $outlet_details = getOutletById($online_selected_outlet);
     if($outlet_details){
+        
+        $category_ids = array($id);
+        $children = $CI->Common_model->getChildCategories($id);
+        foreach($children as $child) {
+            $category_ids[] = $child->id;
+            $grandchildren = $CI->Common_model->getChildCategories($child->id);
+            foreach($grandchildren as $grandchild) {
+                $category_ids[] = $grandchild->id;
+            }
+        }
+        
+        $category_ids_str = implode(',', $category_ids);
+        
         $parts = explode(',', $outlet_details->available_online_foods);
         $filtered_parts = [];
         foreach ($parts as $part) {
@@ -2571,7 +2608,7 @@ function countFoodMenuCategory($id){
         }
         
         $modified_string = implode(',', $filtered_parts);
-    $ig_information = $CI->db->query("SELECT COUNT(*) AS total FROM tbl_food_menus where FIND_IN_SET(`id`, '$modified_string') AND  `category_id`='$id' AND `del_status` = 'Live'")->row();
+    $ig_information = $CI->db->query("SELECT COUNT(*) AS total FROM tbl_food_menus where FIND_IN_SET(`id`, '$modified_string') AND  FIND_IN_SET(`category_id`, '$category_ids_str') AND `del_status` = 'Live'")->row();
     return $ig_information->total;
     }else{
         return false;

@@ -64,6 +64,22 @@
                                 value="<?php echo escape_output($category_information->description) ?>">
                         </div>
                     </div>
+                    <div class="col-sm-12 mb-2 col-md-6">
+                        <div class="form-group">
+                            <label>Parent Category (Optional)</label>
+                            <select name="parent_id" class="form-control">
+                                <option value="0">Top Level Category</option>
+                                <?php 
+                                $current_parent_id = isset($category_information->parent_id) ? $category_information->parent_id : 0;
+                                if (isset($parent_categories) && !empty($parent_categories)) {
+                                    foreach ($parent_categories as $parent_cat) { ?>
+                                        <option value="<?php echo $parent_cat->id; ?>" <?php echo ($parent_cat->id == $current_parent_id) ? 'selected' : ''; ?>><?php echo escape_output($parent_cat->category_name); ?></option>
+                                    <?php }
+                                } ?>
+                            </select>
+                            <small class="text-muted">Select a parent category to create a subcategory</small>
+                        </div>
+                    </div>
                     
 
                 </div>

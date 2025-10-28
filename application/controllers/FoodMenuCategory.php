@@ -69,9 +69,36 @@ class FoodMenuCategory extends Cl_Controller {
         $company_id = $this->session->userdata('company_id');
 
         $data = array();
-        $data['foodMenuCategories'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_food_menu_categories");
+        
+        $all_categories = $this->Common_model->getAllCategoriesWithHierarchy($company_id, 0);
+        $data['foodMenuCategories'] = $this->buildCategoryHierarchy($all_categories, $company_id);
         $data['main_content'] = $this->load->view('master/foodMenuCategory/foodMenuCategories', $data, TRUE);
         $this->load->view('userHome', $data);
+    }
+
+    /**
+     * Build category hierarchy recursively
+     * @access private
+     * @return array
+     * @param array
+     * @param int
+     */
+    private function buildCategoryHierarchy($categories, $company_id, $level = 0) {
+        $result = array();
+        
+        foreach ($categories as $category) {
+            $category->level = $level;
+            $result[] = $category;
+            
+            // Get children
+            $children = $this->Common_model->getChildCategories($category->id);
+            if (!empty($children)) {
+                $child_result = $this->buildCategoryHierarchy($children, $company_id, $level + 1);
+                $result = array_merge($result, $child_result);
+            }
+        }
+        
+        return $result;
     }
      /**
      * food Menu Categories
@@ -94,6 +121,18 @@ class FoodMenuCategory extends Cl_Controller {
     public function deleteFoodMenuCategory($id) {
         $id = $this->custom->encrypt_decrypt($id, 'decrypt');
 
+        $children = $this->Common_model->getChildCategories($id);
+        if (!empty($children)) {
+            $this->session->set_flashdata('exception_er', 'Cannot delete category - it has subcategories. Please delete subcategories first.');
+            redirect('foodMenuCategory/foodMenuCategories');
+        }
+
+        $has_items = $this->Common_model->checkCategoryHasItems($id);
+        if ($has_items) {
+            $this->session->set_flashdata('exception_er', 'Cannot delete category - it has food items. Please remove or reassign items first.');
+            redirect('foodMenuCategory/foodMenuCategories');
+        }
+
         $this->Common_model->deleteStatusChange($id, "tbl_food_menu_categories");
 
         $this->session->set_flashdata('exception',lang('delete_success'));
@@ -111,6 +150,16 @@ class FoodMenuCategory extends Cl_Controller {
             $this->form_validation->set_rules('category_name', lang('category_name'), 'required|max_length[50]');
             $this->form_validation->set_rules('description', lang('description'), 'max_length[50]');
             $this->form_validation->set_rules('category_image', lang('category_image'), 'callback_validate_category_image');
+            
+            $parent_id = htmlspecialcharscustom($this->input->post($this->security->xss_clean('parent_id')));
+            
+            if ($id != "" && $parent_id > 0) {
+                if (!$this->Common_model->canBeParent($id, $parent_id)) {
+                    $this->session->set_flashdata('exception_er', 'Cannot set parent category - would create circular reference');
+                    redirect('foodMenuCategory/addEditFoodMenuCategory/' . $encrypted_id);
+                }
+            }
+            
             if ($this->form_validation->run() == TRUE) {
                 $fmc_info = array();
                 $fmc_info['category_name'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('category_name')));
@@ -121,6 +170,7 @@ class FoodMenuCategory extends Cl_Controller {
                     $fmc_info['category_image'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('category_image_old')));
                 }
                 $fmc_info['description'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('description')));
+                $fmc_info['parent_id'] = $parent_id ? $parent_id : 0;
                 $fmc_info['user_id'] = $this->session->userdata('user_id');
                 $fmc_info['company_id'] = $this->session->userdata('company_id');
                 if ($id == "") {
@@ -134,12 +184,16 @@ class FoodMenuCategory extends Cl_Controller {
             } else {
                 if ($id == "") {
                     $data = array();
+                    $company_id = $this->session->userdata('company_id');
+                    $data['parent_categories'] = $this->Common_model->getCategoriesForDropdown($company_id);
                     $data['main_content'] = $this->load->view('master/foodMenuCategory/addFoodMenuCategory', $data, TRUE);
                     $this->load->view('userHome', $data);
                 } else {
                     $data = array();
                     $data['encrypted_id'] = $encrypted_id;
                     $data['category_information'] = $this->Common_model->getDataById($id, "tbl_food_menu_categories");
+                    $company_id = $this->session->userdata('company_id');
+                    $data['parent_categories'] = $this->Common_model->getCategoriesForDropdown($company_id, $id);
                     $data['main_content'] = $this->load->view('master/foodMenuCategory/editFoodMenuCategory', $data, TRUE);
                     $this->load->view('userHome', $data);
                 }
@@ -147,12 +201,16 @@ class FoodMenuCategory extends Cl_Controller {
         } else {
             if ($id == "") {
                 $data = array();
+                $company_id = $this->session->userdata('company_id');
+                $data['parent_categories'] = $this->Common_model->getCategoriesForDropdown($company_id);
                 $data['main_content'] = $this->load->view('master/foodMenuCategory/addFoodMenuCategory', $data, TRUE);
                 $this->load->view('userHome', $data);
             } else {
                 $data = array();
                 $data['encrypted_id'] = $encrypted_id;
                 $data['category_information'] = $this->Common_model->getDataById($id, "tbl_food_menu_categories");
+                $company_id = $this->session->userdata('company_id');
+                $data['parent_categories'] = $this->Common_model->getCategoriesForDropdown($company_id, $id);
                 $data['main_content'] = $this->load->view('master/foodMenuCategory/editFoodMenuCategory', $data, TRUE);
                 $this->load->view('userHome', $data);
             }

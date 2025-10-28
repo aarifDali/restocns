@@ -63,14 +63,39 @@
     $(this).addClass("active");
 
     var selector = $(this).attr("data-filter");
-    $container.isotope({
-      filter: selector,
-      animationOptions: {
-        duration: 750,
-        easing: "linear",
-        queue: false,
-      },
-    });
+    var descendants = $(this).attr("data-descendants");
+    
+    if (descendants) {
+      var descendantIds = descendants.split(',');
+      
+      var filterFunction = function() {
+        var $item = $(this);
+        for (var i = 0; i < descendantIds.length; i++) {
+          if ($item.hasClass('cat-id-' + descendantIds[i])) {
+            return true;
+          }
+        }
+        return false;
+      };
+      
+      $container.isotope({
+        filter: filterFunction,
+        animationOptions: {
+          duration: 750,
+          easing: "linear",
+          queue: false,
+        },
+      });
+    } else {
+      $container.isotope({
+        filter: selector,
+        animationOptions: {
+          duration: 750,
+          easing: "linear",
+          queue: false,
+        },
+      });
+    }
     return false;
   });
 

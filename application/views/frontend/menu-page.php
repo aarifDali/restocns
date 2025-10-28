@@ -13,7 +13,7 @@ $outlet_details = getOutletById($online_selected_outlet);
   <div class="menu-banner-content text-center">
     <h1 class="menu-title">Discover Our Signature Dishes</h1>
   </div>
-</section>
+</section> 
 <!-- Menu Page Banner End -->
 
 <div class="menu_page">
@@ -23,25 +23,36 @@ $outlet_details = getOutletById($online_selected_outlet);
       <div class="category-section-centered">
         <h2 class="category-title-centered">Menu of the Day</h2>
         <div class="category-list-centered">
-          <!-- <a href="#" data-filter="*" class="category-item-centered active"> -->
-            <!-- <div class="category-icon-centered">
+          <a href="#" data-filter="*" class="category-item-centered active">
+            <div class="category-icon-centered">
               <img src="<?php echo base_url(); ?>assets/website/img/all.png" alt="">
-            </div> -->
-            <!-- <div class="category-info-centered">
-              <h6><?php echo lang('all'); ?></h6>
-              <p><?php echo count($get_food_menu); ?>&nbsp;<?php echo lang('foods'); ?></p>
-            </div> -->
+            </div>
+            <div class="category-info-centered">
+              <h6><?php echo lang('all'); ?> (<?php echo count($get_food_menu); ?>)</h6>
+              <!-- <p><?php echo count($get_food_menu); ?>&nbsp;<?php echo lang('foods'); ?></p> -->
+            </div>
           </a>
           <?php if ($categories) {
             foreach ($categories as $cat) {
+              // Get all descendant category IDs for this category
+              $descendant_ids = array($cat->id);
+              $children = $this->Common_model->getChildCategories($cat->id);
+              foreach($children as $child) {
+                $descendant_ids[] = $child->id;
+                $grandchildren = $this->Common_model->getChildCategories($child->id);
+                foreach($grandchildren as $grandchild) {
+                  $descendant_ids[] = $grandchild->id;
+                }
+              }
+              $descendant_ids_str = implode(',', $descendant_ids);
           ?>
-            <a href="#" data-filter=".cat-id-<?php echo $cat->id ?>" class="category-item-centered">
-              <!-- <div class="category-icon-centered">
-                <img src="<?php echo base_url(); ?><?php echo $cat->category_image ? "uploads/category/" . $cat->category_image : 'assets/media/default_cat.jpg'; ?>" alt="">
-              </div> -->
+            <a href="#" data-filter=".cat-id-<?php echo $cat->id ?>" data-descendants="<?php echo $descendant_ids_str ?>" class="category-item-centered">
+              <div class="category-icon-centered">
+                <img src="<?php echo base_url(); ?><?php echo $cat->category_image ? "uploads/category/" . $cat->category_image : 'assets/media/default_cat.jpg'; ?>" alt="<?php echo $cat->category_name ?>">
+              </div>
               <div class="category-info-centered">
-                <h6><?php echo $cat->category_name ?></h6>
-                <!-- <p><?php echo countFoodMenuCategory($cat->id); ?>&nbsp;<?php echo lang('foods'); ?></p> -->
+                <h6><?php echo $cat->category_name ?> (<?php echo countFoodMenuCategory($cat->id); ?>)</h6>
+                <p style="display: none;"><?php echo countFoodMenuCategory($cat->id); ?>&nbsp;</p>
               </div>
             </a>
           <?php
@@ -243,7 +254,8 @@ $outlet_details = getOutletById($online_selected_outlet);
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     min-width: 120px;
     flex-shrink: 0;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 10px;
   }
 
   .category-item-centered:hover {
@@ -261,9 +273,8 @@ $outlet_details = getOutletById($online_selected_outlet);
   }
 
   .category-icon-centered {
-    width: 35px;
-    height: 35px;
-    margin-right: 10px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
@@ -278,7 +289,7 @@ $outlet_details = getOutletById($online_selected_outlet);
 
   .category-info-centered {
     flex: 1;
-    text-align: center;
+    text-align: left;
   }
 
   .category-info-centered h6 {
@@ -318,9 +329,8 @@ $outlet_details = getOutletById($online_selected_outlet);
     }
     
     .category-icon-centered {
-      width: 40px;
-      height: 40px;
-      margin-right: 15px;
+      width: 50px;
+      height: 50px;
     }
   }
 

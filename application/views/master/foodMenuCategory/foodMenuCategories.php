@@ -47,10 +47,13 @@
                                 $i = count($foodMenuCategories);
                             }
                             foreach ($foodMenuCategories as $fmc) {
+                                $level = isset($fmc->level) ? $fmc->level : 0;
+                                $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level); // Indent based on level
+                                $prefix = ($level > 0) ? '├─ ' : '';
                                 ?>
                             <tr>
                                 <td class="ir_txt_center"><span><?php echo escape_output($i--); ?></span></td>
-                                <td><?php echo escape_output($fmc->category_name) ?></td>
+                                <td><?php echo $indent . $prefix . escape_output($fmc->category_name); ?></td>
                                 <td><img class="ir_w_28" src="<?php echo base_url()?>uploads/category/<?php echo isset($fmc->category_image) && $fmc->category_image ? $fmc->category_image : ''; ?>" alt=""></td>
                                 <td><?php echo escape_output($fmc->description) ?></td>
                                 <td><?php echo escape_output(userName($fmc->user_id)); ?></td>

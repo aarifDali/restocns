@@ -499,7 +499,14 @@ document.addEventListener('DOMContentLoaded', function() {
         $thumb_imgs = isset($outlet_details->thumb_imgs) ? (Array)json_decode($outlet_details->thumb_imgs) : '';
         
         if ($burgers_category) {
-          $burgers_items = getFoodMenuByCategoryId($burgers_category->id);
+          // Use model utilities to collect all descendant categories and fetch items
+          $descendants = $this->Common_model->getAllDescendants($burgers_category->id);
+          $category_ids = array($burgers_category->id);
+          if ($descendants) {
+            foreach ($descendants as $dc) { $category_ids[] = $dc->id; }
+          }
+          $category_ids = array_values(array_unique($category_ids));
+          $burgers_items = $this->Common_model->getFoodMenuByCategoryIds($category_ids, 'tbl_food_menus');
           if ($burgers_items && count($burgers_items) > 0) {
             foreach ($burgers_items as $food) {
               // Get food image

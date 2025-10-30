@@ -43,30 +43,24 @@ foreach ($categories as $cat) {
   <div class="ct-menu-categories menu-filter">
     <div class="container">
       <div class="category-section-centered">
-        <h2 class="category-title-centered">Menu of the Day</h2>
-        <div class="category-list-centered">
-          <a href="#" data-filter="*" class="category-item-centered active">
-            <div class="category-icon-centered">
-              <img src="<?php echo base_url(); ?>assets/website/img/all.png" alt="">
-            </div>
-            <div class="category-info-centered">
-              <h6><?php echo lang('all'); ?> (<?php echo count($get_food_menu); ?>)</h6>
-            </div>
-          </a>
-          <?php if ($categories) {
-            foreach ($categories as $cat) {
-          ?>
-            <a href="#" data-filter=".cat-id-<?php echo $cat->id ?>" class="category-item-centered">
-              <div class="category-icon-centered">
-                <img src="<?php echo base_url(); ?><?php echo $cat->category_image ? "uploads/category/" . $cat->category_image : 'assets/media/default_cat.jpg'; ?>" alt="<?php echo $cat->category_name ?>">
-              </div>
-              <div class="category-info-centered">
-                <h6><?php echo $cat->category_name ?> (<?php echo countFoodMenuCategory($cat->id); ?>)</h6>
-              </div>
+        <h2 class="category-title-centered">Explore Menu</h2>
+        <div class="category-nav-wrapper" style="position:relative;">
+          <button type="button" class="cat-scroll-btn cat-prev" aria-label="Previous" style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);background:#fff;border:2px solid #ffc107;border-radius:50%;width:36px;height:36px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><svg width="18" height="18" viewBox="0 0 20 20" fill="#ffc107" xmlns="http://www.w3.org/2000/svg"><path d="M1.61719 9.11719C1.12891 9.60547 1.12891 10.3984 1.61719 10.8867L7.86719 17.1367C8.35547 17.625 9.14844 17.625 9.63672 17.1367C10.125 16.6484 10.125 15.8555 9.63672 15.3672L5.51562 11.25H17.5C18.1914 11.25 18.75 10.6914 18.75 10C18.75 9.30859 18.1914 8.75 17.5 8.75H5.51953L9.63281 4.63281C10.1211 4.14453 10.1211 3.35156 9.63281 2.86328C9.14453 2.375 8.35156 2.375 7.86328 2.86328L1.61328 9.11328L1.61719 9.11719Z"/></svg></button>
+          <div class="category-list-centered" id="category-items" style="display:flex;gap:15px;align-items:center;justify-content:flex-start;width:100%;height:210px;overflow:hidden;padding:0;">
+            <a href="#" data-filter="*" class="category-item-centered active">
+              <img class="category-thumb-180" src="<?php echo base_url(); ?>assets/website/img/all.png" alt="<?php echo lang('all'); ?>">
             </a>
-          <?php
-            }
-          } ?>
+            <?php if ($categories) {
+              foreach ($categories as $index => $cat) {
+            ?>
+              <a href="#" data-filter=".cat-id-<?php echo $cat->id ?>" class="category-item-centered category-item-image-only category-page-item" data-index="<?php echo $index; ?>" title="<?php echo $cat->category_name ?>">
+                <img class="category-thumb-180" src="<?php echo base_url(); ?><?php echo $cat->category_image ? "uploads/category/" . $cat->category_image : 'assets/media/default_cat.jpg'; ?>" alt="<?php echo $cat->category_name ?>">
+              </a>
+            <?php
+              }
+            } ?>
+          </div>
+          <button type="button" class="cat-scroll-btn cat-next" aria-label="Next" style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);background:#fff;border:2px solid #ffc107;border-radius:50%;width:36px;height:36px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><svg width="18" height="18" viewBox="0 0 20 20" fill="#ffc107" xmlns="http://www.w3.org/2000/svg"><path d="M18.3828 10.8828C18.8711 10.3945 18.8711 9.60156 18.3828 9.11328L12.1328 2.86328C11.6445 2.375 10.8516 2.375 10.3633 2.86328C9.875 3.35156 9.875 4.14453 10.3633 4.63281L14.4844 8.75H2.5C1.80859 8.75 1.25 9.30859 1.25 10C1.25 10.6914 1.80859 11.25 2.5 11.25H14.4805L10.3672 15.3672C9.87891 15.8555 9.87891 16.6484 10.3672 17.1367C10.8555 17.625 11.6484 17.625 12.1367 17.1367L18.3867 10.8867L18.3828 10.8828Z"/></svg></button>
         </div>
       </div>
     </div>
@@ -373,7 +367,19 @@ foreach ($categories as $cat) {
     font-size: 2rem;
     color: #333;
     margin-bottom: 30px;
-    text-align: center;
+    text-align: left;
+    position: relative;
+  }
+
+  .category-title-centered::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+    border-radius: 2px;
   }
 
   .category-list-centered {
@@ -381,32 +387,19 @@ foreach ($categories as $cat) {
     flex-direction: row;
     gap: 15px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: nowrap;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding: 10px 0;
-    scrollbar-width: thin;
-    scrollbar-color: #ffc107 #f0f0f0;
+    scrollbar-width: none; /* Firefox hide */
     width: 100%;
   }
+  #category-items .category-item-centered{flex:0 0 auto}
+  #category-items .category-item-centered:first-child{margin-left:0}
 
-  .category-list-centered::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .category-list-centered::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 3px;
-  }
-
-  .category-list-centered::-webkit-scrollbar-thumb {
-    background: #ffc107;
-    border-radius: 3px;
-  }
-
-  .category-list-centered::-webkit-scrollbar-thumb:hover {
-    background: #ff8c00;
-  }
+  /* Hide scrollbar for the inner items container too */
+  #category-items { scrollbar-width: none; }
+  #category-items::-webkit-scrollbar { display: none; }
 
   .category-item-centered {
     display: flex;
@@ -423,6 +416,18 @@ foreach ($categories as $cat) {
     justify-content: flex-start;
     gap: 10px;
   }
+
+  /* Image-only category tiles */
+  .category-item-image-only{
+    padding: 0;
+    border-radius: 12px;
+    min-width: auto;
+    width: 180px;
+    height: 180px;
+    justify-content: center;
+  }
+  .category-item-image-only .category-icon-centered{display:none}
+  .category-thumb-180{width:180px;height:180px;object-fit:cover;border-radius:12px;display:block}
 
   .category-item-centered:hover {
     background: #fff3cd;
@@ -635,7 +640,38 @@ foreach ($categories as $cat) {
 
 <script>
 $(document).ready(function() {
-    var originalIsotope = null;
+     var originalIsotope = null;
+    // Category smooth scroller with arrows only when overflow
+    (function initCategoryScroll(){
+        var $wrap = $('#category-items');
+        var $prev = $('.cat-prev');
+        var $next = $('.cat-next');
+        // Enable smooth programmatic scrolling
+        $wrap.css('scrollBehavior','smooth');
+        function updateArrows(){
+            var canScroll = $wrap[0].scrollWidth > $wrap[0].clientWidth + 2; // allow small epsilon
+            $prev.css('display', canScroll ? 'flex' : 'none');
+            $next.css('display', canScroll ? 'flex' : 'none');
+            if (!canScroll) return;
+            var maxLeft = $wrap[0].scrollWidth - $wrap[0].clientWidth;
+            var left = $wrap[0].scrollLeft;
+            $prev.prop('disabled', left <= 0).css('opacity', left<=0?0.5:1);
+            $next.prop('disabled', left >= maxLeft-1).css('opacity', left>=maxLeft-1?0.5:1);
+        }
+        function scrollByAmount(dir){
+            var amount = Math.max(200, Math.floor($wrap[0].clientWidth * 0.6));
+            var target = $wrap[0].scrollLeft + (dir * amount);
+            $wrap[0].scrollTo({left: target, behavior: 'smooth'});
+        }
+        $prev.off('click').on('click', function(){ if(!$(this).prop('disabled')) scrollByAmount(-1); });
+        $next.off('click').on('click', function(){ if(!$(this).prop('disabled')) scrollByAmount(1); });
+        // Update on scroll and resize
+        $wrap.on('scroll', updateArrows);
+        $(window).on('resize', updateArrows);
+        // Initial
+        $wrap.scrollLeft(0);
+        setTimeout(updateArrows, 0);
+    })();
     
     // Initialize Isotope on page load for "All" view
     if (typeof $.fn.isotope !== 'undefined') {

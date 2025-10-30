@@ -1991,3 +1991,5 @@ $lang['banner_image']='Banner Image';
 $lang['add_offer_banner']='Add Offer Banner';
 $lang['no_offer_banners_found']='No offer banners found';
 $lang['alert_delete_offer_banner']='Are you sure you want to delete this offer banner?';
+$lang['book_a_table']='Book a Table';
+$lang['opening_hours']='Opening Hours';

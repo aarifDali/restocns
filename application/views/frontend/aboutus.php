@@ -38,7 +38,7 @@ $common_menu_page = isset($company_info->common_menu_page) && $company_info->com
         </div>
         <div class="col-lg-6">
           <div class="section-title-wrap mr-lg-30 content-animate">
-            <h5 class="custom-primary"><?php echo isset($about_us->about_us_title) && $about_us->about_us_title ? $about_us->about_us_title : '' ?></h5>
+            <!-- <h5 class="custom-primary"><?php echo isset($about_us->about_us_title) && $about_us->about_us_title ? $about_us->about_us_title : '' ?></h5> -->
             <h2 class="title"><?php echo isset($about_us->abous_us_heading) && $about_us->abous_us_heading ? $about_us->abous_us_heading : '' ?></h2>
             <p class="subtitle">
               <?php echo isset($about_us->about_us_des) && $about_us->about_us_des ? $about_us->about_us_des : '' ?>

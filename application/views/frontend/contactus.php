@@ -51,7 +51,7 @@ $outlet_details = getOutletById($online_selected_outlet);
             </div>
           </div>
         </div>
-        <div>
+        <!-- <div>
           <?php
           $attributes = ['id' => 'contactUs'];
           echo form_open(base_url('contact-us'), $attributes); ?>
@@ -111,7 +111,7 @@ $outlet_details = getOutletById($online_selected_outlet);
           </div>
           <button type="submit" name="submit" value="submit" class="btn-custom primary"><?php echo lang('Send_Message'); ?></button>
           <?php echo form_close(); ?>
-        </div>
+        </div> -->
       </div>
       <div class="col-lg-6">
         <div id="contactPageMap" class="ct-contact-map">

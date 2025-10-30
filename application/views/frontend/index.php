@@ -1052,11 +1052,11 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- Gallery End -->
 
   <!-- Map Start -->
-  <div class="section-map pb-0">
+  <!-- <div class="section-map pb-0">
     <div class="ct-contact-map-wrapper">
       <div id="contactPageMap" class="ct-contact-map">
         <iframe src="<?= escape_output($company_info->google_map) ?>" width="100%" height="450"  allowfullscreen="" loading="lazy"></iframe>
       </div>
     </div>
-  </div>
+  </div> -->
   <!-- Map End -->

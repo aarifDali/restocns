@@ -1918,6 +1918,5 @@ class Frontend extends Cl_Controller {
         redirect('Frontend/offerBanners');
     }
 
+
 }
-
-

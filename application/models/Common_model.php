@@ -1967,6 +1967,32 @@ class Common_model extends CI_Model {
         return $this->db->get()->result();
     }
 
+    /**
+     * Get Food Menu by Multiple Category IDs
+     * @access public
+     * @param array $category_ids
+     * @param string $table_name
+     * @return array
+     */
+    public function getFoodMenuByCategoryIds($category_ids, $table_name = "tbl_food_menus") {
+        if (empty($category_ids)) {
+            return array();
+        }
+        
+        $category_ids_str = implode(',', $category_ids);
+        
+        $where = "";
+        if($table_name == "tbl_food_menus"){
+            $where .= " AND parent_id = '0'";
+        }
+        
+        $result = $this->db->query("SELECT * 
+          FROM $table_name 
+          WHERE category_id IN ($category_ids_str) AND del_status = 'Live' AND parent_id = '0' $where
+          ORDER BY id DESC")->result();
+        return $result;
+    }
+
 }
 
 ?>

@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     
-    const translateX = -50 + scrollProgress * 80; 
+    const translateX = -65 + scrollProgress * 70; 
     scooterContainer.style.transform = `translateX(${translateX}%)`;
     
     // Add slight vertical movement for more dynamic effect

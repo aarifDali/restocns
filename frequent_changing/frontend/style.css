@@ -2561,7 +2561,7 @@ Banner Text Styling
 }
 
 .banner-title-split .title-bottom {
-  color: #db4e08;
+  color: #dbb808;
   font-size: 120px;
   font-weight: 700;
   margin-top: 0;
@@ -2572,37 +2572,92 @@ Banner Text Styling
 
 /* Responsive Banner Title */
 @media only screen and (max-width: 1200px) {
-  .banner-title-split .title-top,
+  .banner-title-split .title-top {
+    font-size: 3.5rem;
+    letter-spacing: 0.5px;
+  }
   .banner-title-split .title-bottom {
-    font-size: 3.2rem;
+    font-size: 4.5rem;
+  }
+  .banner-title-split {
+    text-align: left;
+    position: relative;
+    margin-left: -35px;
+    padding-left: 35px;
+  }
+  .banner.banner-4 .banner-inner .container {
+    padding-left: 0 !important;
+    margin-left: 0;
+  }
+  .banner.banner-4 .banner-inner {
+    padding-left: 0 !important;
+    padding-right: 20px;
   }
 }
 
 @media only screen and (max-width: 991.98px) {
-  .banner-title-split .title-top,
-  .banner-title-split .title-bottom {
+  .banner-title-split .title-top {
     font-size: 2.8rem;
+    letter-spacing: 0.3px;
+  }
+  .banner-title-split .title-bottom {
+    font-size: 3.5rem;
+  }
+  .banner-title-split {
+    text-align: left;
+    position: relative;
+    margin-left: -35px;
+    padding-left: 35px;
+  }
+  .banner.banner-4 .banner-inner .container {
+    padding-left: 0 !important;
+    margin-left: 0;
+  }
+  .banner.banner-4 .banner-inner {
+    padding-left: 0 !important;
+    padding-right: 20px;
   }
 }
 
 @media only screen and (max-width: 767.98px) {
-  .banner-title-split .title-top,
+  .banner-title-split .title-top {
+    font-size: 2.2rem;
+    letter-spacing: 0.2px;
+    margin-bottom: 0.05em;
+  }
   .banner-title-split .title-bottom {
-    font-size: 2.4rem;
+    font-size: 2.8rem;
+  }
+  .banner-title-split {
+    text-align: center;
   }
 }
 
 @media only screen and (max-width: 575.98px) {
-  .banner-title-split .title-top,
+  .banner-title-split .title-top {
+    font-size: 1.8rem;
+    letter-spacing: 0.1px;
+    margin-bottom: 0.05em;
+  }
   .banner-title-split .title-bottom {
-    font-size: 2rem;
+    font-size: 2.2rem;
+  }
+  .banner-title-split {
+    text-align: center;
   }
 }
 
 @media only screen and (max-width: 400px) {
-  .banner-title-split .title-top,
+  .banner-title-split .title-top {
+    font-size: 1.5rem;
+    letter-spacing: 0px;
+    margin-bottom: 0.03em;
+  }
   .banner-title-split .title-bottom {
     font-size: 1.8rem;
+  }
+  .banner-title-split {
+    text-align: center;
   }
 }
 
@@ -2653,41 +2708,259 @@ Banner Animated Image
 /* Responsive Design for Banner Animated Image */
 @media only screen and (max-width: 1200px) {
   .banner-animated-image {
-    right: 3%;
-    height: 85%;
-    width: 50%;
+    right: 2%;
+    height: 80%;
+    width: 48%;
   }
 }
 
 @media only screen and (max-width: 991.98px) {
   .banner-animated-image {
-    right: 2%;
-    height: 80%;
-    width: 55%;
+    right: 1%;
+    height: 70%;
+    width: 50%;
+    top: 55%;
   }
 }
 
 @media only screen and (max-width: 767.98px) {
   .banner-animated-image {
-    right: 1%;
-    height: 75%;
-    width: 60%;
-    top: 55%;
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    height: auto;
+    width: 100%;
+    max-width: 400px;
+    margin: 30px auto 0;
+    opacity: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  .banner-animated-image img {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    animation: bounceFloat 3s ease-in-out infinite;
   }
 }
 
 @media only screen and (max-width: 575.98px) {
   .banner-animated-image {
-    right: 0;
-    height: 70%;
-    width: 65%;
-    top: 50%;
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    height: auto;
+    width: 100%;
+    max-width: 350px;
+    margin: 25px auto 0;
+    opacity: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  .banner-animated-image img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    max-height: 250px;
+    object-fit: contain;
+    animation: bounceFloat 3s ease-in-out infinite;
   }
 }
 
 @media only screen and (max-width: 400px) {
   .banner-animated-image {
-    display: none; /* Hide on very small screens for better UX */
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    height: auto;
+    width: 100%;
+    max-width: 280px;
+    margin: 20px auto 0;
+    opacity: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  .banner-animated-image img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    animation: bounceFloat 3s ease-in-out infinite;
+  }
+}
+
+/* =========================
+Responsive Banner Container (banner-4)
+========================= */
+@media only screen and (max-width: 1200px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 750px;
+    padding: 100px 20px 60px;
+  }
+  .banner.banner-4 .banner-inner .subtitle {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+  .banner.banner-4 .banner-inner .btn-custom {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 650px;
+    padding: 80px 20px 50px;
+  }
+  .banner.banner-4 .banner-inner .subtitle {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    padding: 0 15px;
+  }
+  .banner.banner-4 .banner-inner .btn-custom {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap40px {
+    gap: 25px !important;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap20px {
+    gap: 15px !important;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 700px;
+    padding: 60px 15px 40px;
+    position: relative;
+  }
+  .banner.banner-4 .banner-inner .subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 18px;
+    padding: 0 10px;
+  }
+  .banner.banner-4 .banner-inner .btn-custom {
+    padding: 11px 24px;
+    font-size: 14px;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap40px {
+    gap: 20px !important;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap20px {
+    gap: 12px !important;
+  }
+  .banner.banner-4 .banner-inner .container {
+    padding-left: 15px;
+    padding-right: 15px;
+    position: relative;
+    z-index: 2;
+  }
+  /* Move animated image below text content */
+  .banner.banner-4 .banner-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 650px;
+    padding: 50px 15px 35px;
+    position: relative;
+  }
+  .banner.banner-4 .banner-inner .subtitle {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    padding: 0 5px;
+  }
+  .banner.banner-4 .banner-inner .btn-custom {
+    padding: 10px 20px;
+    font-size: 13px;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    display: block;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap40px {
+    gap: 18px !important;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap20px {
+    gap: 10px !important;
+  }
+  .banner.banner-4 .banner-inner .container {
+    position: relative;
+    z-index: 2;
+  }
+  /* Move animated image below text content */
+  .banner.banner-4 .banner-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 580px;
+    padding: 40px 10px 30px;
+    position: relative;
+  }
+  .banner.banner-4 .banner-inner .subtitle {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    padding: 0;
+  }
+  .banner.banner-4 .banner-inner .btn-custom {
+    padding: 9px 18px;
+    font-size: 12px;
+    width: 100%;
+    max-width: 250px;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap40px {
+    gap: 15px !important;
+  }
+  .banner.banner-4 .banner-inner .d-flex.flex-column.gap20px {
+    gap: 8px !important;
+  }
+  .banner.banner-4 .banner-inner .container {
+    position: relative;
+    z-index: 2;
+  }
+  /* Move animated image below text content */
+  .banner.banner-4 .banner-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+/* Adjust banner height for landscape mobile */
+@media only screen and (max-height: 600px) and (max-width: 991.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 450px;
+    padding: 40px 15px 30px;
   }
 }
   

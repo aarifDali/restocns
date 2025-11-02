@@ -5394,9 +5394,55 @@ td.quantity {
 
 .banner.banner-4 .banner-inner {
   text-align: center;
-  min-height: 900px !important;
+  min-height: 940px;
   display: flex;
   align-items: center;
+}
+
+/* Responsive overrides for banner-4 */
+@media only screen and (max-width: 1200px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 750px !important;
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 650px !important;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 700px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media only screen and (max-width: 575.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 650px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 580px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media only screen and (max-height: 600px) and (max-width: 991.98px) {
+  .banner.banner-4 .banner-inner {
+    min-height: 450px !important;
+  }
 }
 
 .banner.banner-1 .banner-inner {

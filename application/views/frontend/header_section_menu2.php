@@ -180,9 +180,9 @@ $current_url = current_url();
       <li class="menu-item">
         <a href="<?php echo base_url() ?>"><?php echo lang('home'); ?></a>
       </li>
-      <li class="menu-item">
+      <!-- <li class="menu-item">
         <a href="<?php echo base_url() . 'about-us'; ?>"><?php echo lang('about_us'); ?></a>
-      </li>
+      </li> -->
       <li class="menu-item">
         <a href="<?php echo base_url() . 'online-order'; ?>"><?php echo lang('Order_Online'); ?></a>
       </li>
@@ -191,9 +191,9 @@ $current_url = current_url();
           <a href="<?php echo base_url() . 'reservation'; ?>"><?php echo lang('reservation'); ?></a>
         </li>
       <?php endif?>
-      <li class="menu-item">
+      <!-- <li class="menu-item">
         <a href="<?php echo base_url() . 'contact-us'; ?>"><?php echo lang('contact_us'); ?></a>
-      </li>
+      </li> -->
     </ul>
 
   </div>

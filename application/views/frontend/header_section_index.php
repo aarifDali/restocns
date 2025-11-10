@@ -18,9 +18,9 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
       <li class="menu-item">
         <a href="<?php echo base_url() ?>" class="<?= $current_url == base_url() ? 'active' : '' ?>"><?php echo lang('home'); ?></a>
       </li>
-      <li class="menu-item">
+      <!-- <li class="menu-item">
         <a href="<?php echo base_url() . 'about-us'; ?>" class="<?= str_contains_custom($current_url, 'about-us') ? 'active' : '' ?>"><?php echo lang('about_us'); ?></a>
-      </li>
+      </li> -->
       <li class="menu-item">
         <a href="<?php echo base_url() . 'online-order'; ?>" class="<?= str_contains_custom($current_url, 'online-order') ? 'active' : '' ?>"><?php echo lang('Order_Online'); ?></a>
       </li>
@@ -29,9 +29,9 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
           <a href="<?php echo base_url() . 'reservation'; ?>" class="<?= str_contains_custom($current_url, 'reservation') ? 'active' : '' ?>"><?php echo lang('reservation'); ?></a>
         </li>
       <?php endif?>
-      <li class="menu-item">
+      <!-- <li class="menu-item">
         <a href="<?php echo base_url() . 'contact-us'; ?>" class="<?= str_contains_custom($current_url, 'contact-us') ? 'active' : '' ?>"><?php echo lang('contact_us'); ?></a>
-      </li>
+      </li> -->
 
     </ul>
 
@@ -58,9 +58,9 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
         <li class="menu-item menu-item-has-children">
           <a href="<?php echo base_url() ?>" class="<?= $current_url == base_url() ? 'active' : '' ?>"><?php echo lang('home'); ?></a>
         </li>
-        <li class="menu-item menu-item-has-children">
+        <!-- <li class="menu-item menu-item-has-children">
           <a href="<?php echo base_url() . 'about-us'; ?>" class="<?= str_contains_custom($current_url, 'about-us') ? 'active' : '' ?>"><?php echo lang('about_us'); ?></a>
-        </li>
+        </li> -->
         <li class="menu-item menu-item-has-children">
           <a href="<?php echo base_url() . 'online-order'; ?>" class="<?= str_contains_custom($current_url, 'online-order')  || str_contains_custom($current_url, 'checkout') || str_contains_custom($current_url, 'food-details') ? 'active' : '' ?>"><?php echo lang('Order_Online'); ?></a>
         </li>
@@ -69,9 +69,9 @@ $social_media  = isset($company_info->social_media) && $company_info->social_med
             <a href="<?php echo base_url() . 'reservation'; ?>" class="<?= str_contains_custom($current_url, 'reservation') ? 'active' : '' ?>"><?php echo lang('reservation'); ?></a>
           </li>
         <?php endif?>
-        <li class="menu-item menu-item-has-children">
+        <!-- <li class="menu-item menu-item-has-children">
           <a href="<?php echo base_url() . 'contact-us'; ?>" class="<?= str_contains_custom($current_url, 'contact-us') ? 'active' : '' ?>"><?php echo lang('contact_us'); ?></a>
-        </li>
+        </li> -->
       </ul>
 
       <div class="header-controls">

@@ -325,6 +325,196 @@ foreach ($categories as $cat) {
     transform: scale(1.08);
   }
 
+  /* Mobile Product Card Redesign - Horizontal Layout */
+  @media (max-width: 768px) {
+    /* Override Bootstrap columns for product containers */
+    .menu-container .col-xl-3,
+    .menu-container .col-lg-4,
+    .menu-container .col-md-6,
+    .subcategory-carousel .col-xl-3,
+    .subcategory-carousel .col-lg-4,
+    .subcategory-carousel .col-md-6 {
+      width: auto !important;
+      max-width: none !important;
+      flex: none !important;
+      margin-bottom: 15px;
+    }
+
+    /* Product container - fixed dimensions, horizontal flex layout */
+    .product {
+      width: 430px;
+      max-width: calc(100vw - 30px);
+      height: 215px;
+      display: flex;
+      flex-direction: row;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin: 0 auto 15px auto;
+      position: relative;
+    }
+
+    /* Ensure containers don't overflow */
+    .menu-container,
+    .subcategory-sections {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    /* Disable hover effects on mobile */
+    .product:hover {
+      transform: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .product:hover .product-thumb img {
+      transform: none;
+    }
+
+    /* Product body - Left section (60%) - starts from left border of product */
+    .product-body {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 15px 15px 15px 15px;
+      order: 1;
+    }
+
+    /* Product description adjustments - starts from left border of product div */
+    .product-desc {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      margin-left: -15px;
+      padding-left: 0;
+    }
+
+    /* Rating wrap - keep visible but smaller */
+    .product-desc .rating-wrap {
+      margin-bottom: 5px;
+    }
+
+    .product-desc .rating-wrap .rating {
+      font-size: 12px;
+    }
+
+    .product-desc .rating-num {
+      font-size: 11px;
+    }
+
+    /* Product name - adjust font size */
+    .product-desc h4 {
+      font-size: 16px;
+      line-height: 1.3;
+      margin: 0 0 8px 0;
+    }
+
+    .product-desc h4 a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    /* Product price - prominent display with larger font in yellow */
+    .product-price {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffc107;
+      margin: 8px 0 0 0;
+    }
+
+    .product-price span {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffc107;
+    }
+
+
+    /* Product thumb - Right section (40%) with image */
+    .product-thumb {
+      width: 40%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      order: 2;
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-thumb img {
+      width: 100%;
+      height: calc(100% - 60px);
+      object-fit: cover;
+      border-radius: 0;
+      display: block;
+    }
+
+    /* Product controls - position absolutely in right section, below image */
+    .product-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 60%;
+      width: 40%;
+      margin: 0;
+      padding: 8px;
+      padding-right: 25px;
+      z-index: 2;
+      box-sizing: border-box;
+    }
+
+    /* Order item button - KFC style with padding and rounded corners */
+    .product-controls .order-item {
+      display: block;
+      width: 100%;
+      background-color: #e40000;
+      color: #fff !important;
+      text-align: center;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      font-size: 14px;
+      line-height: 1.2;
+      box-sizing: border-box;
+    }
+
+    .product-controls .order-item svg {
+      display: none !important;
+    }
+
+    .product-controls .order-item::after {
+      content: "ADD TO CART";
+      display: inline-block;
+    }
+
+    /* Subcategory carousel adjustments - prevent horizontal scroll */
+    .subcategory-carousel-wrapper {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    .subcategory-carousel {
+      padding: 15px 0;
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    /* Products in carousel inherit all styles from .product selector above */
+    /* No specific overrides needed - they will use the same 430px width, margins, and styling */
+
+    /* Prevent body horizontal scroll */
+    body {
+      overflow-x: hidden;
+    }
+  }
 
   .menu-banner {
     background: #f8f5f0;
@@ -489,19 +679,126 @@ foreach ($categories as $cat) {
       margin-bottom: 25px;
     }
     
+    .category-nav-wrapper {
+      height: auto !important;
+    }
+    
     .category-list-centered {
-      flex-direction: column;
+      flex-direction: row;
+      flex-wrap: wrap;
       gap: 10px;
+      overflow-x: visible !important;
+      overflow-y: visible !important;
+      height: auto !important;
+      max-height: none !important;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    
+    #category-items {
+      height: auto !important;
+      overflow: visible !important;
+      max-height: none !important;
     }
     
     .category-item-centered {
       padding: 12px 20px;
-      min-width: 200px;
+      min-width: auto;
+    }
+    
+    /* Image-only category tiles - mobile size: 3 per row, 110x110 */
+    .category-item-image-only {
+      width: calc((100% - 20px) / 3);
+      max-width: 110px;
+      min-width: 110px;
+      height: 110px;
+      flex: 0 0 calc((100% - 20px) / 3);
+      margin-bottom: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Category images fill the tile completely */
+    .category-thumb-180 {
+      width: 110px !important;
+      height: 110px !important;
+      object-fit: cover;
+      display: block;
+      border-radius: 12px;
+    }
+    
+    /* Make the "All" category container match image-only items */
+    .category-item-centered:first-child {
+      width: calc((100% - 20px) / 3);
+      max-width: 110px;
+      min-width: 110px;
+      height: 110px;
+      padding: 0;
+      flex: 0 0 calc((100% - 20px) / 3);
+      margin-bottom: 10px;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      display: flex;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    
+    .category-item-centered:first-child .category-thumb-180 {
+      width: 110px !important;
+      height: 110px !important;
+      object-fit: cover;
+      border-radius: 12px;
     }
     
     .category-icon-centered {
       width: 50px;
       height: 50px;
+    }
+    
+    /* Hide scroll buttons on mobile since items wrap */
+    .cat-scroll-btn {
+      display: none !important;
+    }
+  }
+  
+  /* Extra small mobile devices - ensure 3 per row */
+  @media (max-width: 575px) {
+    .category-item-image-only {
+      width: calc((100% - 20px) / 3);
+      min-width: 110px;
+      max-width: 110px;
+      height: 110px;
+      flex: 0 0 calc((100% - 20px) / 3);
+    }
+    
+    .category-item-centered:first-child {
+      width: calc((100% - 20px) / 3);
+      min-width: 110px;
+      max-width: 110px;
+      flex: 0 0 calc((100% - 20px) / 3);
+    }
+    
+    .category-thumb-180 {
+      width: 110px !important;
+      height: 110px !important;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    
+    .category-item-image-only {
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .category-item-centered:first-child {
+      padding: 0;
+      overflow: hidden;
     }
   }
 

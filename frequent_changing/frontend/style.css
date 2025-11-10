@@ -600,6 +600,14 @@ h6 {
   border-radius: 0;
 }
 
+/* Mobile Product Image Override */
+@media only screen and (max-width: 768px) {
+  .product .product-thumb img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
 .product .product-body {
   background-color: #fff;
   border-radius: 18px;

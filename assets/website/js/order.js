@@ -21,6 +21,22 @@
     let food_menu_id = $(this).attr("data_single_order_id");
     let exist_check_food_menu_id;
     let exist_check = "No";
+    
+    // Check if product has variations and if one is selected
+    let has_variations = $("#has_variations_check").val() == '1';
+    let selected_variation = $(".product_variation_radio:checked");
+    
+    if(has_variations && selected_variation.length === 0){
+      let selected_variation_msg = $("#selected_variation").val() || "Please select a Variation";
+      toastr['error'](selected_variation_msg, '');
+      return false;
+    }
+    
+    // If variation is selected, use variation ID instead of parent product ID
+    if(selected_variation.length > 0){
+      food_menu_id = selected_variation.val();
+    }
+    
     $(".sidebar-cart-card").each(function () {
       exist_check_food_menu_id = $(this).attr("data-order-cart-id");
       if (exist_check_food_menu_id == food_menu_id) {
@@ -48,14 +64,32 @@
     $(".sidebar-cart-card").each(function () {
       let food_menu_id = $(this).attr("data-order-cart-id");
       
-      let qty = $(this).attr("data-qty");
+      let qty = Number($(this).attr("data-qty")) || 1;
 
-      let item_total_price = parseFloat(
-        $(this).find(".subtotal_cal").attr("data-inline_total")
-      ).toFixed(ir_precision);
+      let inline_total = $(this).find(".subtotal_cal").attr("data-inline_total");
+      let item_total_price = parseFloat(inline_total || 0).toFixed(ir_precision);
 
-      item_total_price = item_total_price*qty;
+      item_total_price = item_total_price * qty;
       let menu_details = search_by_menu_id(food_menu_id, window.items);
+      
+      // If variation not found, try to get parent product tax info
+      if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+        // Check if this cart item has a parent ID stored
+        let parent_id = $(this).attr("data-parent-id");
+        if (parent_id) {
+          menu_details = search_by_menu_id(Number(parent_id), window.items);
+        }
+        // If still not found, try to get from the original details_item_price
+        if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+          let original_food_menu_id = Number($("#details_item_price").attr("data-food_menu_id"));
+          menu_details = search_by_menu_id(original_food_menu_id, window.items);
+        }
+      }
+      
+      // Skip if menu details still not found
+      if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+        return;
+      }
 
       let tax_information = JSON.parse(menu_details[0].tax_information);
 
@@ -221,6 +255,29 @@
   function getFoodMenuTax(details_item_price,food_menu_id){
    
       let menu_details = search_by_menu_id(food_menu_id, window.items);
+      
+      // If variation not found in window.items, try to get parent product tax info
+      if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+        // Check if we have a selected variation with parent ID
+        let selected_variation = $(".product_variation_radio:checked");
+        if (selected_variation.length > 0) {
+          let variation_item = selected_variation.closest(".product-variation-item");
+          let parent_id = variation_item.attr("data-parent-id");
+          if (parent_id) {
+            menu_details = search_by_menu_id(Number(parent_id), window.items);
+          }
+        }
+        // If still not found, use the original food_menu_id from details_item_price element
+        if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+          let original_food_menu_id = Number($("#details_item_price").attr("data-food_menu_id"));
+          menu_details = search_by_menu_id(original_food_menu_id, window.items);
+        }
+      }
+
+      // If still no menu details found, return 0 tax
+      if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+        return 0;
+      }
 
       let tax_information = JSON.parse(menu_details[0].tax_information);
       let total_tax = 0;
@@ -290,6 +347,29 @@
     if($("#details_item_price").length){
     let details_item_price = Number($("#details_item_price").attr("data-price"));
     let food_menu_id = Number($("#details_item_price").attr("data-food_menu_id"));
+    let tax_calculation_id = food_menu_id; // Use parent ID for tax calculation
+
+    // Check if a variation is selected
+    let selected_variation = $(".product_variation_radio:checked");
+    if(selected_variation.length > 0){
+      let variation_item = selected_variation.closest(".product-variation-item");
+      details_item_price = Number(variation_item.attr("data-price"));
+      food_menu_id = Number(variation_item.attr("data-food_menu_id"));
+      
+      // Use parent ID for tax calculation (variations inherit tax from parent)
+      let parent_id = variation_item.attr("data-parent-id");
+      if (parent_id) {
+        tax_calculation_id = Number(parent_id);
+      } else {
+        // Fallback to original food_menu_id if parent_id not available
+        tax_calculation_id = Number($("#details_item_price").attr("data-food_menu_id"));
+      }
+      
+      // Update the displayed price
+      $("#details_item_price").attr("data-price", details_item_price);
+      $("#details_item_price").attr("data-food_menu_id", food_menu_id);
+      $("#details_item_price").html(currency + parseFloat(details_item_price).toFixed(precision));
+    }
 
       let total_modifier_cost  = 0;
       let total_tax = 0;
@@ -304,7 +384,8 @@
         }
     });
 
-    let total_food_tax = getFoodMenuTax(details_item_price,food_menu_id);
+    // Use tax_calculation_id (parent ID) for tax calculation
+    let total_food_tax = getFoodMenuTax(details_item_price, tax_calculation_id);
     let item_details_qty = Number($("#item_details_qty").val());
     let total = ((details_item_price + total_modifier_cost + total_tax + total_food_tax)*item_details_qty).toFixed(2);
     $(".show_total_amount").html(currency+total);
@@ -315,8 +396,48 @@
     detailsFoodTotalCalculate();
   });
   
+  // Handle product variation radio button selection
+  $(document).on("change", ".product_variation_radio", function (e) {
+    // Remove active class from all tiles
+    $(".variation-tile").removeClass("active");
+    // Add active class to selected tile
+    $(this).closest(".variation-tile").addClass("active");
+    detailsFoodTotalCalculate();
+  });
+  
+  // Also trigger on click to ensure it works
+  $(document).on("click", ".product_variation_radio", function (e) {
+    // Remove active class from all tiles
+    $(".variation-tile").removeClass("active");
+    // Add active class to selected tile
+    $(this).closest(".variation-tile").addClass("active");
+    setTimeout(function() {
+      detailsFoodTotalCalculate();
+    }, 10);
+  });
+  
+  // Handle tile click to trigger radio selection
+  $(document).on("click", ".variation-tile", function (e) {
+    // Don't trigger if clicking directly on the radio button (it handles itself)
+    if (!$(e.target).is('.product_variation_radio')) {
+      let radio = $(this).find('.product_variation_radio');
+      if (radio.length && !radio.prop('disabled')) {
+        radio.prop('checked', true).trigger('change');
+      }
+    }
+  });
+  
   $(document).on("click", ".call_qty", function (e) {
     detailsFoodTotalCalculate();
+  });
+  
+  // Initialize total calculation on page load if variation is selected
+  $(document).ready(function() {
+    if($(".product_variation_radio:checked").length > 0){
+      setTimeout(function() {
+        detailsFoodTotalCalculate();
+      }, 100);
+    }
   });
   
   $(document).on("click", ".ct-social-login", function (e) {
@@ -328,7 +449,7 @@
   });
   
   $(document).on("click", ".minus_cart", function (e) {
-      let qty = Number($(this).parent().find(".cart_qty").val());
+      let qty = Number($(this).parent().find(".cart_qty").val()) || 1;
       let update_qty = qty;
       if(qty==1){
 
@@ -336,15 +457,18 @@
         update_qty = qty-1;
       }
       $(this).parent().find(".cart_qty").attr("value",update_qty);
+      $(this).closest(".sidebar-cart-card").attr("data-qty", update_qty);
 
-      let inline_total = Number($(this).parent().parent().find(".subtotal_cal").attr("data-inline_total")) * update_qty;
+      // Get base price per unit from data-price attribute
+      let base_price = Number($(this).closest(".sidebar-cart-card").attr("data-price")) || 0;
+      let inline_total = base_price * update_qty;
       let modifer_price = 0;
-      $(".modifier_div").each(function () {
-           modifer_price+= (Number($(this).attr("data-total_price"))* update_qty);
+      $(this).closest(".sidebar-cart-card").find(".modifier_div").each(function () {
+           let mod_price = Number($(this).attr("data-total_price")) || 0;
+           modifer_price += (mod_price * update_qty);
       });
+      $(this).parent().parent().find(".subtotal_cal").attr("data-inline_total", base_price);
       $(this).parent().parent().find(".subtotal_cal").text(currency+(modifer_price+inline_total).toFixed(precision));
- 
-      $(this).parent().parent().parent().parent().parent().attr("data-qty",update_qty);
       
 
       setTimeout(function () {
@@ -360,21 +484,24 @@
   });
 
   $(document).on("click", ".plus_cart", function (e) {
-    let qty = Number($(this).parent().find(".cart_qty").val());
-    let update_qty = qty;
-      update_qty = qty+1;
+    let qty = Number($(this).parent().find(".cart_qty").val()) || 1;
+    let update_qty = qty+1;
 
     $(this).parent().find(".cart_qty").attr("value",update_qty);
-    let inline_total = Number($(this).parent().parent().find(".subtotal_cal").attr("data-inline_total")) * update_qty;
+    $(this).closest(".sidebar-cart-card").attr("data-qty", update_qty);
+    
+    // Get base price per unit from data-price attribute
+    let base_price = Number($(this).closest(".sidebar-cart-card").attr("data-price")) || 0;
+    let inline_total = base_price * update_qty;
+    
     let modifer_price = 0;
-    $(".modifier_div").each(function () {
-         modifer_price+= (Number($(this).attr("data-total_price"))* update_qty);
+    $(this).closest(".sidebar-cart-card").find(".modifier_div").each(function () {
+         let mod_price = Number($(this).attr("data-total_price")) || 0;
+         modifer_price += (mod_price * update_qty);
     });
-    $(this).parent().parent().find(".subtotal_cal").text(currency+(modifer_price+inline_total).toFixed(precision));
-
-
-    $(this).parent().parent().parent().parent().parent().attr("data-qty",update_qty);
-
+      $(this).parent().parent().find(".subtotal_cal").attr("data-inline_total", base_price);
+      $(this).parent().parent().find(".subtotal_cal").text(currency+(modifer_price+inline_total).toFixed(precision));
+      
     setTimeout(function () {
       storageCartDataInLocal();
       setCheckOutCartItem();
@@ -589,7 +716,18 @@
     get_total_vat();
   }, 50);
   function singleItemOrder(food_order_id, exist_check) {
-    let quantity = $(`.item_details_qty_${food_order_id}`).val();
+    // Get quantity - use parent product ID for quantity input selector
+    let quantity_input_id = food_order_id;
+    let selected_variation = $(".product_variation_radio:checked");
+    if(selected_variation.length > 0){
+      let variation_item = selected_variation.closest(".product-variation-item");
+      let parent_id = variation_item.attr("data-parent-id");
+      if (parent_id) {
+        quantity_input_id = parent_id;
+      }
+    }
+    let quantity = $(`.item_details_qty_${quantity_input_id}`).val() || 1;
+    quantity = Number(quantity) || 1;
     $.ajax({
       type: "POST",
       url: base_url + "Frontend/singleItemOrder",
@@ -619,18 +757,20 @@
               modifier_price = $(this)
                 .closest(".customize-variation-item")
                 .data("price");
-              modifier_price = Number(quantity) * Number(modifier_price);
+              // Store per-unit price, will be multiplied by quantity when calculating
+              let modifier_price_per_unit = Number(modifier_price);
+              let modifier_price_total = modifier_price_per_unit * Number(quantity);
               modifier_html +=
                 `<li data-id="` +
                 modifier_id +
                 `" data-total_price="` +
-                modifier_price +
+                modifier_price_per_unit +
                 `" data-name="` +
                 modifier_name +
-                `" class="d-block modifier_div">${modifier_name} (${modifier_price.toFixed(
+                `" class="d-block modifier_div">${modifier_name} (${modifier_price_total.toFixed(
                   precision
                 )})</li>`;
-              modifier_sum += Number(modifier_price);
+              modifier_sum += modifier_price_total;
             }
           });
 
@@ -655,13 +795,49 @@
             );
             $(".sidebar-cart-card-meta").html("").html(modifier_html);
           } else {
+            // Check if this is a variation product
+            let selected_variation = $(".product_variation_radio:checked");
+            let cart_image = response.data.photo;
+            let cart_name = response.data.name;
+            
+            if(selected_variation.length > 0){
+              let variation_item = selected_variation.closest(".product-variation-item");
+              let parent_image = variation_item.attr("data-parent-image");
+              let parent_name = variation_item.attr("data-parent-name");
+              let alternative_name = variation_item.attr("data-alternative-name");
+              
+              // Use parent product image
+              if(parent_image && parent_image.trim() !== ''){
+                cart_image = parent_image;
+              }
+              
+              // Build name with parent name and alternative name in brackets
+              if(parent_name && parent_name.trim() !== ''){
+                if(alternative_name && alternative_name.trim() !== ''){
+                  cart_name = parent_name + " (" + alternative_name + ")";
+                } else {
+                  cart_name = parent_name;
+                }
+              }
+            }
+            
+            // Store parent ID if this is a variation
+            let parent_id_attr = "";
+            if(selected_variation.length > 0){
+              let variation_item = selected_variation.closest(".product-variation-item");
+              let parent_id = variation_item.attr("data-parent-id");
+              if (parent_id) {
+                parent_id_attr = ` data-parent-id="${parent_id}"`;
+              }
+            }
+            
             html_content += `
-            <div class="sidebar-cart-card" data-note="${special_instructions}" data-image="${response.data.photo}" data-name="${response.data.name}" data-price="${response.data.sale_price}" data-qty="${Number(quantity)}"  data-order-cart-id="${food_order_id}">
+            <div class="sidebar-cart-card" data-note="${special_instructions}" data-image="${cart_image}" data-name="${cart_name}" data-price="${response.data.sale_price}" data-qty="${Number(quantity)}"  data-order-cart-id="${food_order_id}"${parent_id_attr}>
                 <div class="card-header">
-                    <img src="${response.data.photo}" alt="${response.data.name}" />
+                    <img src="${cart_image}" alt="${cart_name}" />
                     <div class="d-flex flex-column gap15px w-100">
                         <div>
-                            <h3 class="card-title">${response.data.name}</h3>
+                            <h3 class="card-title">${cart_name}</h3>
                             <div class="card-prices sidebar-cart-card-meta">
                                 <ul>
                                     ${modifier_html}
@@ -735,22 +911,24 @@
       });
       let total_tax = Number($("#total_vat_hidden").val());
 
-   
       let delivery_amount_hidden = ($("#delivery_amount_hidden").val());
       let apply_on_delivery_charge = Number($("#apply_on_delivery_charge").val());
       let delivery_charge_amount_tax = 0;
-      if (total_tax) {
-        if(apply_on_delivery_charge==2){
+      let delivery_charge_amount_tmp = 0;
+      let total_delivery_charge = 0;
+      
+      // Only calculate delivery charge if there are items in cart (subtotal > 0)
+      if (subtotal > 0) {
+        if (total_tax) {
+          if(apply_on_delivery_charge==2){
             delivery_charge_amount_tax = Number(get_particular_item_discount_amount(delivery_amount_hidden,total_tax));
+          }
         }
+        
+        delivery_charge_amount_tmp = Number(get_particular_item_discount_amount(delivery_amount_hidden,subtotal));
+        total_delivery_charge = delivery_charge_amount_tax + delivery_charge_amount_tmp;
       }
-  
-      let delivery_charge_amount_tmp = Number(get_particular_item_discount_amount(delivery_amount_hidden,subtotal));
-      let total_delivery_charge =  delivery_charge_amount_tax+delivery_charge_amount_tmp;
-     
-
-
-     
+      
       if (!subtotal) {
         total_tax = 0;
       }
@@ -816,14 +994,21 @@
     let delivery_amount_hidden = ($("#delivery_amount_hidden").val());
     let apply_on_delivery_charge = Number($("#apply_on_delivery_charge").val());
     let delivery_charge_amount_tax = 0;
-    if (total_vat_hidden) {
-      if(apply_on_delivery_charge==2){
+    let delivery_charge_amount_tmp = 0;
+    let total_delivery_charge = 0;
+    
+    // Only calculate delivery charge if there are items in cart (subtotal > 0)
+    if (subtotal > 0) {
+      if (total_vat_hidden) {
+        if(apply_on_delivery_charge==2){
           delivery_charge_amount_tax = Number(get_particular_item_discount_amount(delivery_amount_hidden,total_vat_hidden));
+        }
       }
-    }
 
-     let delivery_charge_amount_tmp = Number(get_particular_item_discount_amount(delivery_amount_hidden,subtotal));
-    let total_delivery_charge =  delivery_charge_amount_tax+delivery_charge_amount_tmp;
+      delivery_charge_amount_tmp = Number(get_particular_item_discount_amount(delivery_amount_hidden,subtotal));
+      total_delivery_charge = delivery_charge_amount_tax + delivery_charge_amount_tmp;
+    }
+    
     grandTotal += total_delivery_charge;
     $(".checkout_delivery_fee").text(parseFloat(total_delivery_charge).toFixed(precision));
     $(".checkout_sub_total").text(parseFloat(subtotal).toFixed(precision));

@@ -48,6 +48,8 @@
 ?>
 <input type="hidden" id="item_add_success" value="<?php echo lang('item_add_success') ?>">
 <input type="hidden" id="tax_type" value="<?php echo $company_info->tax_type ?>">
+<input type="hidden" id="selected_variation" value="<?php echo lang('selected_variation'); ?>">
+<input type="hidden" id="has_variations_check" value="<?php echo isset($has_variations) && $has_variations ? '1' : '0'; ?>">
 <div class="section product-single">
   <div class="container">
     <div class="row">
@@ -76,10 +78,56 @@
           </div>
           <!-- /Price -->
 
-          <!-- Variations -->
+          <!-- Product Variations -->
+          <?php if (isset($has_variations) && $has_variations && $variations) {?>
+          <div class="product-variations-wrapper mb-3">
+            <div class="variation-header mb-3">
+              <h5>Choose your size</h5>
+            </div>
+            <div class="variation-tiles-container">
+              <?php
+                foreach ($variations as $variation) {
+                  $variation_price = isset($variation->sale_price) && $variation->sale_price ? $variation->sale_price : 0;
+                  $variation_alternative_name = isset($variation->alternative_name) && $variation->alternative_name ? escape_output($variation->alternative_name) : '';
+                  $parent_product_id = isset($food_details->id) ? escape_output($food_details->id) : '';
+                  $parent_product_name = isset($food_details->name) ? escape_output($food_details->name) : '';
+                  // Get parent product image
+                  $parent_img = '';
+                  $str_parent = "large_".$food_details->id;
+                  if(isset($large_imgs[$str_parent]) && $large_imgs[$str_parent]){
+                    $parent_img = base_url()."uploads/website/".$large_imgs[$str_parent];
+                  }else{
+                    if($food_details->photo)  {
+                      $parent_img = base_url()."images/".$food_details->photo;
+                    }else{
+                      $parent_img = base_url()."assets/media/no_image.png";
+                    }
+                  }
+              ?>
+                <div class="variation-tile product-variation-item" data-id="<?php echo escape_output($variation->id); ?>" data-name="<?php echo escape_output($variation->name); ?>" data-price="<?php echo $variation_price; ?>" data-food_menu_id="<?php echo escape_output($variation->id); ?>" data-alternative-name="<?php echo $variation_alternative_name; ?>" data-parent-id="<?php echo $parent_product_id; ?>" data-parent-name="<?php echo $parent_product_name; ?>" data-parent-image="<?php echo $parent_img; ?>">
+                  <i class="flaticon-burger variation-tile-icon"></i>
+                  <div class="custom-control custom-radio variation-radio-wrapper">
+                    <?php if($company_info->sos_enable_online_order=="Yes"):?>
+                      <input type="radio" class="custom-control-input product_variation_radio" name="product_variation" id="variation_<?php echo $variation->id; ?>" value="<?php echo escape_output($variation->id); ?>">
+                    <?php endif?>
+                    <label class="custom-control-label variation-label" for="variation_<?php echo $variation->id; ?>">
+                      <span class="variation-name"><?php echo escape_output($variation->name); ?></span>
+                      <span class="variation-price"><?php echo getAmtCustom($variation_price); ?></span>
+                    </label>
+                  </div>
+                </div>
+              <?php
+                }
+              ?>
+            </div>
+          </div>
+          <?php }?>
+          <!-- /Product Variations -->
+
+          <!-- Modifiers -->
           <div class="customize-variations">
             <div class="row">
-              <!-- Variation Start -->
+              <!-- Modifier Start -->
               <div class="col-lg-6 col-12">
               <?php if ($modifiers) {?>
                 <div class="customize-variation-wrapper">
@@ -104,10 +152,10 @@
               <?php }?>
               </div>
 
-              <!-- Variation End -->
+              <!-- Modifier End -->
             </div>
           </div>
-          <!-- /Variations -->
+          <!-- /Modifiers -->
 
           <!-- Add To Cart Form -->
           <form class="atc-form" method="post">

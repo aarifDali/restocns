@@ -1050,8 +1050,15 @@ class Frontend extends Cl_Controller {
 
     public function menuItemDetails($food_id="", $category_id=""){
         $data = array();
-        $data['food_details'] = getFoodMenuDetails(d($food_id,2));
+        $food_details = getFoodMenuDetails(d($food_id,2));
+        $data['food_details'] = $food_details;
         $data['food_by_cat'] = getFoodMenuByCategoryId(d($category_id,2));
+        
+        // Fetch variations if product has them (parent_id = 0 means it's a parent product)
+        $variations = $this->Common_model->getAllByCustomId($food_details->id, "parent_id", "tbl_food_menus", $order='');
+        $data['variations'] = $variations;
+        $data['has_variations'] = (isset($variations) && !empty($variations));
+        
         $data['header_content'] = $this->load->view('frontend/header_section_menu2', $data, TRUE);
         $data['main_content'] = $this->load->view('frontend/menu-item', $data, TRUE);
         $this->load->view('frontend/website_layout', $data);

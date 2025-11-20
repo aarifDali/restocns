@@ -176,10 +176,11 @@ $language = $this->session->userdata('language');
   <!-- Footer Start -->
   <footer class="ct-footer footer-dark">
     <style>
-      .footer-brand{display:flex;align-items:center;justify-content:center;gap:20px;margin: -15px 0px 42px;}
+      .ct-footer.footer-dark{padding-top:40px !important}
+      .footer-brand{display:flex;align-items:center;justify-content:center;gap:20px;margin: -15px 0px 20px;}
       .footer-brand .line{flex:1;height:1px;background:rgba(255,255,255,0.25);max-width:630px}
       .footer-logo-center{max-height:90px;object-fit:contain}
-      .ct-footer .footer-middle{margin-bottom:40px}
+      .ct-footer .footer-middle{margin-bottom:20px}
       .footer-tagline{text-align:center;max-width:720px;margin:8px auto 24px;opacity:.85;line-height:1.6}
       .footer-quick-links .fq-link{transition:color .2s ease}
       .footer-quick-links .fq-link:hover{color:#FFC107 !important}
@@ -196,12 +197,8 @@ $language = $this->session->userdata('language');
         $decoded = html_entity_decode($short_des, ENT_QUOTES, 'UTF-8');
         // Strip tags and collapse excessive whitespace/newlines
         $plain   = trim(preg_replace('/\s+/', ' ', strip_tags($decoded)));
-        $words   = preg_split('/\s+/', $plain);
-        $mid     = (int)ceil(count($words)/2);
-        $first   = implode(' ', array_slice($words, 0, $mid));
-        $second  = implode(' ', array_slice($words, $mid));
     ?>
-      <p class="footer-tagline"><?php echo escape_output($first); ?><br><?php echo escape_output($second); ?></p>
+      <p class="footer-tagline"><?php echo escape_output($plain); ?></p>
       <ul class="d-flex social-links" style="justify-content:center; gap:14px; margin:-6px 0 24px;">
         <li>
           <!-- fb -->
@@ -245,7 +242,7 @@ $language = $this->session->userdata('language');
       </div>
     </div>
 
-    <?php $footer_address = isset($outlet_details->address) && $outlet_details->address ? $outlet_details->address : ''; if($footer_address): ?>
+    <!-- <?php $footer_address = isset($outlet_details->address) && $outlet_details->address ? $outlet_details->address : ''; if($footer_address): ?>
       <div class="modal fade" id="footerAddressModal" tabindex="-1" role="dialog" aria-labelledby="footerAddressLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content" style="background:#1f1f1f;color:#fff;border:0;padding-bottom:24px;">
@@ -273,16 +270,17 @@ $language = $this->session->userdata('language');
           </div>
         </div>
       </div>
-    <?php endif; ?>
+    <?php endif; ?> -->
+    <div class="container" style="height:50%;display:flex;align-items:center;justify-content:center;">
+      <div class="footer-copyright text-center">
+        <p style="color:#fbc226;margin-top:20px;"><?php echo isset($getWhiteLabel->footer) && $getWhiteLabel->footer ? $getWhiteLabel->footer : ''; ?></p>
+      </div>
+    </div>
 
     <!-- Footer Bottom -->
-    <div class="footer-bottom" style="background:#00A850;height:80px;">
-       <div class="container" style="height:100%;display:flex;align-items:center;justify-content:center;">
-        <div class="footer-copyright text-center">
-           <p style="color:#fbc226;margin-top:20px;"><?php echo isset($getWhiteLabel->footer) && $getWhiteLabel->footer ? $getWhiteLabel->footer : ''; ?></p>
-         </div>
-       </div>
-     </div>
+    <!-- <div class="footer-bottom" style="background:#545454;height:50px;">
+       
+     </div> -->
 
   </footer>
 

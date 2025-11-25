@@ -34,10 +34,15 @@
               <p><?php echo lang('subtotal'); ?>:</p>
               <p class="cart-subtotal"><?php echo escape_output(getAmtCustom(0))?></p>
             </div>
-            <div class="d-flex justify-content-between">
+            <!-- Tax Breakdown Container -->
+            <div id="cart-tax-breakdown" class="cart-tax-breakdown">
+              <!-- Individual tax items will be populated by JavaScript -->
+            </div>
+            <!-- Fallback: Show total tax if no breakdown available -->
+            <!-- <div class="d-flex justify-content-between cart-tax-total-fallback" style="display: none;">
               <p><?php echo lang('tax'); ?>:</p>
               <p class="cart-tax"><?php echo escape_output(getAmtCustom(0))?></p>
-            </div>
+            </div> -->
             <div class="d-flex justify-content-between">
               <p><?php echo lang('delivery_fee'); ?>:</p>
               <p class="cart-delivery-fee" id="side_cart_delivery_charge"><?php echo escape_output(getAmtCustom(0))?></p>

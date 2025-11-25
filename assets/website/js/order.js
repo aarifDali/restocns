@@ -251,6 +251,9 @@
     $("#tax_row_show").html(html_modal);
 
     $("#total_vat_hidden").val((total_vat).toFixed(2));
+    
+    // Store tax breakdown globally for use in cart and checkout
+    window.cartTaxBreakdown = tax_object;
   }
   function getFoodMenuTax(details_item_price,food_menu_id){
    
@@ -909,7 +912,139 @@
         
         subtotal += parseFloat(subtotalValue);
       });
-      let total_tax = Number($("#total_vat_hidden").val());
+      
+      // Use stored tax breakdown from get_total_vat() if available, otherwise calculate
+      let tax_object = window.cartTaxBreakdown || {};
+      let collect_tax = $("#collect_tax").val();
+      
+      // If no stored breakdown, calculate it
+      if (collect_tax == "Yes" && Object.keys(tax_object).length === 0) {
+        let tax_name = [];
+        $(".sidebar-cart-card").each(function () {
+          let food_menu_id = $(this).attr("data-order-cart-id");
+          let qty = Number($(this).attr("data-qty")) || 1;
+          let inline_total = $(this).find(".subtotal_cal").attr("data-inline_total");
+          let item_total_price = parseFloat(inline_total || 0).toFixed(ir_precision);
+          item_total_price = item_total_price * qty;
+          
+          let menu_details = search_by_menu_id(food_menu_id, window.items);
+          
+          // If variation not found, try to get parent product tax info
+          if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+            let parent_id = $(this).attr("data-parent-id");
+            if (parent_id) {
+              menu_details = search_by_menu_id(Number(parent_id), window.items);
+            }
+            if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+              let original_food_menu_id = Number($("#details_item_price").attr("data-food_menu_id"));
+              menu_details = search_by_menu_id(original_food_menu_id, window.items);
+            }
+          }
+          
+          if (menu_details && menu_details.length > 0 && menu_details[0]) {
+            let tax_information = JSON.parse(menu_details[0].tax_information);
+            
+            if (tax_information.length > 0) {
+              for (let k in tax_information) {
+                if (checkTaxApply(tax_information[k].tax_field_name)) {
+                  let tax_field_name = tax_information[k].tax_field_name;
+                  let current_value = 0;
+                  let tax_type = Number($("#tax_type").val());
+                  
+                  if (tax_type == 1) {
+                    current_value = parseFloat(
+                      parseFloat(tax_information[k].tax_field_percentage) * parseFloat(item_total_price)
+                    ) / parseFloat(100);
+                  } else {
+                    current_value = (
+                      parseFloat(item_total_price) -
+                      parseFloat(item_total_price) / (1 + tax_information[k].tax_field_percentage / 100)
+                    );
+                  }
+                  
+                  if (tax_name.includes(tax_field_name)) {
+                    tax_object[tax_field_name] = (
+                      parseFloat(tax_object[tax_field_name] || 0) + Number(current_value)
+                    ).toFixed(ir_precision);
+                  } else {
+                    tax_name.push(tax_field_name);
+                    tax_object[tax_field_name] = Number(current_value).toFixed(ir_precision);
+                  }
+                }
+              }
+            }
+          }
+          
+          // Calculate tax for modifiers
+          $(this).find(".sidebar-cart-card-meta li").each(function () {
+            let modifier_id = $(this).attr("data-id");
+            let modifier_total_price = Number($(this).attr("data-total_price")) * qty;
+            
+            let modifier_details = search_by_modifer_id(modifier_id, window.only_modifiers);
+            
+            if (modifier_details.length > 0 && modifier_details[0].tax_information) {
+              let tax_information = JSON.parse(modifier_details[0].tax_information);
+              
+              if (tax_information.length > 0) {
+                for (let k in tax_information) {
+                  if (checkTaxApply(tax_information[k].tax_field_name)) {
+                    let tax_field_name = tax_information[k].tax_field_name;
+                    let current_value = 0;
+                    let tax_type = Number($("#tax_type").val());
+                    
+                    if (tax_type == 1) {
+                      current_value = parseFloat(
+                        parseFloat(tax_information[k].tax_field_percentage) * parseFloat(modifier_total_price)
+                      ) / parseFloat(100);
+                    } else {
+                      current_value = (
+                        parseFloat(modifier_total_price) -
+                        parseFloat(modifier_total_price) / (1 + tax_information[k].tax_field_percentage / 100)
+                      );
+                    }
+                    
+                    if (tax_name.includes(tax_field_name)) {
+                      tax_object[tax_field_name] = (
+                        parseFloat(tax_object[tax_field_name] || 0) + Number(current_value)
+                      ).toFixed(ir_precision);
+                    } else {
+                      tax_name.push(tax_field_name);
+                      tax_object[tax_field_name] = Number(current_value).toFixed(ir_precision);
+                    }
+                  }
+                }
+              }
+            }
+          });
+        });
+      }
+      
+      // Calculate total tax from breakdown
+      let total_tax = 0;
+      $.each(tax_object, function (key, value) {
+        total_tax += Number(value);
+      });
+      
+      // Fallback to total_vat_hidden if breakdown is empty
+      if (total_tax === 0) {
+        total_tax = Number($("#total_vat_hidden").val()) || 0;
+      }
+      
+      // Display tax breakdown in cart
+      let tax_breakdown_html = "";
+      if (Object.keys(tax_object).length > 0) {
+        $.each(tax_object, function (tax_name, tax_amount) {
+          tax_breakdown_html += '<div class="d-flex justify-content-between">';
+          tax_breakdown_html += '<p>' + tax_name + ':</p>';
+          tax_breakdown_html += '<p>' + currency + parseFloat(tax_amount).toFixed(precision) + '</p>';
+          tax_breakdown_html += '</div>';
+        });
+        $("#cart-tax-breakdown").html(tax_breakdown_html);
+        $(".cart-tax-total-fallback").hide();
+      } else {
+        $("#cart-tax-breakdown").html("");
+        $(".cart-tax-total-fallback").show();
+      }
 
       let delivery_amount_hidden = ($("#delivery_amount_hidden").val());
       let apply_on_delivery_charge = Number($("#apply_on_delivery_charge").val());
@@ -931,7 +1066,10 @@
       
       if (!subtotal) {
         total_tax = 0;
+        $("#cart-tax-breakdown").html("");
+        $(".cart-tax-total-fallback").show();
       }
+      
       let total_payable = subtotal + total_tax + total_delivery_charge;
       $(".cart-subtotal").text(`${currency}${subtotal.toFixed(precision)}`);
       $(".cart-tax").text(`${currency}${total_tax.toFixed(precision)}`);
@@ -986,10 +1124,135 @@
       subtotal+=subtotal_inline;
     });
 
+    // Use stored tax breakdown from get_total_vat() if available, otherwise calculate
+    let tax_object = window.cartTaxBreakdown || {};
+    let collect_tax = $("#collect_tax").val();
+    
+    // If no stored breakdown, try to calculate from checkout items
+    if (collect_tax == "Yes" && Object.keys(tax_object).length === 0) {
+      let tax_name = [];
+      $(".checkout-item-row").each(function () {
+        let food_menu_id = $(this).attr("data-food-menu-id");
+        let qty = Number($(this).attr("data-qty")) || 1;
+        let item_price = parseFloat($(this).find(".checkout_single_subtotal").text().replace(currency, '').trim()) / qty;
+        let item_total_price = item_price * qty;
+        
+        let menu_details = search_by_menu_id(food_menu_id, window.items);
+        
+        if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+          let parent_id = $(this).attr("data-parent-id");
+          if (parent_id) {
+            menu_details = search_by_menu_id(Number(parent_id), window.items);
+          }
+        }
+        
+        if (menu_details && menu_details.length > 0 && menu_details[0]) {
+          let tax_information = JSON.parse(menu_details[0].tax_information);
+          
+          if (tax_information.length > 0) {
+            for (let k in tax_information) {
+              if (checkTaxApply(tax_information[k].tax_field_name)) {
+                let tax_field_name = tax_information[k].tax_field_name;
+                let current_value = 0;
+                let tax_type = Number($("#tax_type").val());
+                
+                if (tax_type == 1) {
+                  current_value = parseFloat(
+                    parseFloat(tax_information[k].tax_field_percentage) * parseFloat(item_total_price)
+                  ) / parseFloat(100);
+                } else {
+                  current_value = (
+                    parseFloat(item_total_price) -
+                    parseFloat(item_total_price) / (1 + tax_information[k].tax_field_percentage / 100)
+                  );
+                }
+                
+                if (tax_name.includes(tax_field_name)) {
+                  tax_object[tax_field_name] = (
+                    parseFloat(tax_object[tax_field_name] || 0) + Number(current_value)
+                  ).toFixed(ir_precision);
+                } else {
+                  tax_name.push(tax_field_name);
+                  tax_object[tax_field_name] = Number(current_value).toFixed(ir_precision);
+                }
+              }
+            }
+          }
+        }
+        
+        // Calculate tax for modifiers in checkout
+        $(this).find(".checkout-modifier-item").each(function () {
+          let modifier_id = $(this).attr("data-modifier-id");
+          let modifier_price = parseFloat($(this).find(".checkout-modifier-price").text().replace(currency, '').trim()) * qty;
+          
+          let modifier_details = search_by_modifer_id(modifier_id, window.only_modifiers);
+          
+          if (modifier_details.length > 0 && modifier_details[0].tax_information) {
+            let tax_information = JSON.parse(modifier_details[0].tax_information);
+            
+            if (tax_information.length > 0) {
+              for (let k in tax_information) {
+                if (checkTaxApply(tax_information[k].tax_field_name)) {
+                  let tax_field_name = tax_information[k].tax_field_name;
+                  let current_value = 0;
+                  let tax_type = Number($("#tax_type").val());
+                  
+                  if (tax_type == 1) {
+                    current_value = parseFloat(
+                      parseFloat(tax_information[k].tax_field_percentage) * parseFloat(modifier_price)
+                    ) / parseFloat(100);
+                  } else {
+                    current_value = (
+                      parseFloat(modifier_price) -
+                      parseFloat(modifier_price) / (1 + tax_information[k].tax_field_percentage / 100)
+                    );
+                  }
+                  
+                  if (tax_name.includes(tax_field_name)) {
+                    tax_object[tax_field_name] = (
+                      parseFloat(tax_object[tax_field_name] || 0) + Number(current_value)
+                    ).toFixed(ir_precision);
+                  } else {
+                    tax_name.push(tax_field_name);
+                    tax_object[tax_field_name] = Number(current_value).toFixed(ir_precision);
+                  }
+                }
+              }
+            }
+          }
+        });
+      });
+    }
+    
+    // Calculate total tax from breakdown
+    let total_tax = 0;
+    $.each(tax_object, function (key, value) {
+      total_tax += Number(value);
+    });
+    
+    // Use total_vat_hidden if available (from get_total_vat), otherwise use calculated total_tax
     let total_vat_hidden = $("#total_vat_hidden").val();
-    $(".checkout_tax_total").text(
-      parseFloat(total_vat_hidden).toFixed(precision)
-    );
+    if (!total_vat_hidden || total_vat_hidden == "0" || total_vat_hidden == "0.00") {
+      total_vat_hidden = total_tax.toFixed(2);
+    } else if (total_tax > 0) {
+      // Use calculated total if breakdown exists
+      total_vat_hidden = total_tax.toFixed(2);
+    }
+    
+    // Display tax breakdown in checkout
+    let tax_breakdown_html = "";
+    if (Object.keys(tax_object).length > 0) {
+      $.each(tax_object, function (tax_name, tax_amount) {
+        tax_breakdown_html += '<p class="shipping">' + tax_name + ': <span>' + currency + parseFloat(tax_amount).toFixed(precision) + '</span></p>';
+        tax_breakdown_html += '<hr />';
+      });
+      $("#checkout-tax-breakdown").html(tax_breakdown_html);
+      $(".checkout-tax-total-fallback").hide();
+    } else {
+      $("#checkout-tax-breakdown").html("");
+      $(".checkout-tax-total-fallback").show();
+      $(".checkout_tax_total").text(parseFloat(total_vat_hidden).toFixed(precision));
+    }
 
     let delivery_amount_hidden = ($("#delivery_amount_hidden").val());
     let apply_on_delivery_charge = Number($("#apply_on_delivery_charge").val());
@@ -1175,9 +1438,9 @@
         let this_qty = Number($(this).attr("data-qty"));
         total_items_in_cart_qty += this_qty;
       });
-      let total_amount = $(".checkout_grand_total").eq(1).text();
-      let checkout_delivery_fee = Number($(".checkout_delivery_fee").text());
-      let checkout_sub_total = $(".checkout_sub_total").text();
+      let total_amount = $(".checkout_grand_total").eq(1).text().replace(currency, '').trim();
+      let checkout_delivery_fee = Number($(".checkout_delivery_fee").text().replace(currency, '').trim());
+      let checkout_sub_total = $(".checkout_sub_total").text().replace(currency, '').trim();
       let total_vat = $("#total_vat_hidden").val();
       let outlet_id_indexdb = outlet_id;
       let order_info = "{";
@@ -1278,11 +1541,52 @@
         $(".sidebar-cart-card").each(function () {
           let item_id = $(this).attr("data-order-cart-id");
           let menu_details = search_by_menu_id(item_id, window.items);
+          
+          // If variation not found, try to get parent product tax info
+          if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+            // Check if this cart item has a parent ID stored
+            let parent_id = $(this).attr("data-parent-id");
+            if (parent_id) {
+              menu_details = search_by_menu_id(Number(parent_id), window.items);
+            }
+            // If still not found, try to get from the original details_item_price
+            if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+              let original_food_menu_id = Number($("#details_item_price").attr("data-food_menu_id"));
+              if (original_food_menu_id) {
+                menu_details = search_by_menu_id(original_food_menu_id, window.items);
+              }
+            }
+          }
+          
+          // Use fallback values if menu details still not found
+          let item_price_from_attr = parseFloat($(this).attr("data-price") || "0");
+          let tax_information_fallback = "[]";
+          let item_price_fallback = item_price_from_attr;
+          
+          // Check if this is a variation (has parent_id attribute)
+          let parent_id_attr = $(this).attr("data-parent-id");
+          let is_variation = (parent_id_attr && parent_id_attr !== "" && parent_id_attr !== "0");
+          
+          if (!menu_details || menu_details.length === 0 || !menu_details[0]) {
+            console.warn("Menu details not found for item_id:", item_id, "Using fallback values");
+            menu_details = [{
+              tax_information: tax_information_fallback,
+              price: item_price_fallback.toString()
+            }];
+          }
+          
           let item_name = $(this).attr("data-name");
           let qty = Number($(this).attr("data-qty"));
 
           let item_vat = [];
-          let tax_information_tmp = JSON.parse(menu_details[0].tax_information);
+          let tax_information_tmp = [];
+          
+          try {
+            tax_information_tmp = JSON.parse(menu_details[0].tax_information || "[]");
+          } catch(e) {
+            console.error("Error parsing tax_information for item_id:", item_id, e);
+            tax_information_tmp = [];
+          }
 
           if (tax_information_tmp.length > 0) {
             for (let k in tax_information_tmp) {
@@ -1304,12 +1608,19 @@
           let item_cooking_status = "";
           let item_type = "";
 
-          let item_unit_price = menu_details[0].price;
+          // For variations, prioritize price from cart item attribute (data-price)
+          // This ensures we use the variation price, not the parent price
+          let item_unit_price;
+          if (is_variation && item_price_from_attr > 0) {
+            item_unit_price = item_price_from_attr;
+          } else {
+            item_unit_price = parseFloat(menu_details[0].price || item_price_from_attr || "0");
+          }
           let item_quantity = qty;
           let is_kot_print = "";
           let tmp_qty = qty;
           let p_qty = qty;
-          let item_price_with_discount = menu_details[0].price * qty;
+          let item_price_with_discount = item_unit_price * qty;
           let item_discount_amount = 0;
           let item_price_without_discount = item_price_with_discount; 
 
@@ -1447,8 +1758,9 @@
           close_order: 0,
         },
         success: function (data) {
-        
-          if (data.status == true) {
+          console.log("Order response:", data);
+          
+          if (data && data.status == true) {
             localStorage["cart_html_irp"] = "";
             localStorage["checkout_cart_html_irp"] = "";
             let order_id = data.order_id;
@@ -1464,10 +1776,22 @@
               callResorpayPayment(total_amount, order_id);
             }
           } else {
-            window.location.replace(base_url + "payment-fail");
+            console.error("Order failed:", data);
+            let error_msg = (data && data.message) ? data.message : 'Order placement failed. Please try again.';
+            toastr['error'](error_msg, 'Error');
+            $(".pay_now").removeClass("no_access");
+            if (data && data.status === false) {
+              window.location.replace(base_url + "payment-fail");
+            }
           }
         },
-        error: function () {},
+        error: function (xhr, status, error) {
+          console.error("AJAX Error:", status, error);
+          console.error("Response:", xhr.responseText);
+          console.error("Request URL:", base_url + "PaymentController/add_kitchen_sale_by_ajax");
+          toastr['error']('Order placement failed. Please check your connection and try again.', 'Error');
+          $(".pay_now").removeClass("no_access");
+        },
       });
     }
   });

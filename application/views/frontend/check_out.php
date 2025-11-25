@@ -52,7 +52,12 @@ $paymentSetting   = paymentSetting();
             <div class="totals">
               <p class="subtotal"><?php echo lang('sub_total'); ?>: <span><?php echo $company_info->currency; ?><span class="checkout_sub_total"></span></span> </p>
               <hr />
-              <p class="shipping"><?php echo lang('vat'); ?>: <span><?php echo $company_info->currency; ?><span class="checkout_tax_total"></span></span></p>
+              <!-- Tax Breakdown Container -->
+              <div id="checkout-tax-breakdown" class="checkout-tax-breakdown">
+                <!-- Individual tax items will be populated by JavaScript -->
+              </div>
+              <!-- Fallback: Show total tax if no breakdown available -->
+              <p class="shipping checkout-tax-total-fallback" style="display: none;"><?php echo lang('vat'); ?>: <span><?php echo $company_info->currency; ?><span class="checkout_tax_total"></span></span></p>
               <hr />
               <p class="shipping"><?php echo lang('delivery_fee'); ?>: <span><?php echo $company_info->currency; ?><span class="checkout_delivery_fee"></span></span></p>
               <hr />

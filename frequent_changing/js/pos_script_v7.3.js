@@ -1082,10 +1082,17 @@
                                         }
     
                                         let alternative_name = getAlternativeNameById(this_item.food_menu_id, window.items);
+                                        // Extract just the alternative name text without brackets for comparison
+                                        let alt_name_text = alternative_name.replace(/[()]/g, '');
+                                        // Only append if menu_name doesn't already contain it
+                                        let display_name = this_item.menu_name;
+                                        if (shouldAppendAlternativeName(this_item.menu_name, alt_name_text)) {
+                                            display_name = this_item.menu_name + alternative_name;
+                                        }
                                         let i = 1;
                                         total_item_counter+=Number(this_item.qty);
                                         item_html+=`<tr>`;
-                                        item_html+=`<td class="no-border border-bottom ir_wid_90"># <span class="sn_counter">`+sl+`</span>: `+this_item.menu_name+alternative_name;
+                                        item_html+=`<td class="no-border border-bottom ir_wid_90"># <span class="sn_counter">`+sl+`</span>: `+display_name;
                                         if (this_item.menu_combo_items != "" && this_item.menu_combo_items!=undefined  && this_item.menu_combo_items!=null && this_item.menu_combo_items!="undefined") {
                                             item_html+= `<br><span  style="padding-left: 30px;">`+combo_txt+": "+this_item.menu_combo_items+`</span>`;
                                         }
@@ -1952,10 +1959,17 @@
                       modifier_prices_custom = this_item.modifiers_price.split(',');
                   }
                   let alternative_name = getAlternativeNameById(this_item.food_menu_id, window.items);
+                  // Extract just the alternative name text without brackets for comparison
+                  let alt_name_text = alternative_name.replace(/[()]/g, '');
+                  // Only append if menu_name doesn't already contain it
+                  let display_name = this_item.menu_name;
+                  if (shouldAppendAlternativeName(this_item.menu_name, alt_name_text)) {
+                      display_name = this_item.menu_name + alternative_name;
+                  }
                   let i = 1;
                   total_item_counter+=Number(this_item.qty);
                   row_of_item+=`<tr>`;
-                  row_of_item+=`<td class="no-border border-bottom ir_wid_90"># <span class="sn_counter">`+sl+`</span>: `+this_item.menu_name+alternative_name;
+                  row_of_item+=`<td class="no-border border-bottom ir_wid_90"># <span class="sn_counter">`+sl+`</span>: `+display_name;
                   if (this_item.menu_combo_items != "" && this_item.menu_combo_items!=undefined  && this_item.menu_combo_items!=null && this_item.menu_combo_items!="undefined") {
                       row_of_item+= `<br><span  style="padding-left: 30px;">`+combo_txt+": "+this_item.menu_combo_items+`</span>`;
                   }
@@ -2166,8 +2180,15 @@
             total_item_counter+=Number(this_item.qty);
             let discount_value = Number(this_item.item_discount_amount) ? "(-"+getAmount(this_item.item_discount_amount)+")": '';
             let alternative_name = getAlternativeNameById(this_item.food_menu_id, window.items);
+            // Extract just the alternative name text without brackets for comparison
+            let alt_name_text = alternative_name.replace(/[()]/g, '');
+            // Only append if menu_name doesn't already contain it
+            let display_name = this_item.menu_name;
+            if (shouldAppendAlternativeName(this_item.menu_name, alt_name_text)) {
+                display_name = this_item.menu_name + alternative_name;
+            }
             invoice_print+=`<tr>`;
-            invoice_print+=`<td class="no-border border-bottom ir_wid_90"># `+sl+`:`+this_item.menu_name+alternative_name;
+            invoice_print+=`<td class="no-border border-bottom ir_wid_90"># `+sl+`:`+display_name;
             invoice_print+=`<small></small> &nbsp;&nbsp;`+ this_item.qty + `&nbsp;X&nbsp;`+getAmount(this_item.menu_unit_price)+discount_value ;
             if (this_item.menu_combo_items != "" && this_item.menu_combo_items!=undefined  && this_item.menu_combo_items!=null && this_item.menu_combo_items!="undefined") {
                 invoice_print+= `<br><span  style="padding-left: 30px;">`+combo_txt+this_item.menu_combo_items+`</span>`;
@@ -2513,9 +2534,16 @@
             total_item_counter+=Number(this_item.qty);
             let discount_value = Number(this_item.item_discount_amount) ? "(-"+getAmount(this_item.item_discount_amount)+")": '';
             let alternative_name = getAlternativeNameById(this_item.food_menu_id, window.items);
+            // Extract just the alternative name text without brackets for comparison
+            let alt_name_text = alternative_name.replace(/[()]/g, '');
+            // Only append if menu_name doesn't already contain it
+            let display_name = this_item.menu_name;
+            if (shouldAppendAlternativeName(this_item.menu_name, alt_name_text)) {
+                display_name = this_item.menu_name + alternative_name;
+            }
            
             invoice_print+=`<tr>`;
-            invoice_print+=`<td class="no-border border-bottom ir_wid_90"># `+sl+`:`+this_item.menu_name+alternative_name;
+            invoice_print+=`<td class="no-border border-bottom ir_wid_90"># `+sl+`:`+display_name;
             invoice_print+=`<small></small> &nbsp;&nbsp;`+ this_item.qty + `&nbsp;X&nbsp;`+getAmount(this_item.menu_unit_price)+discount_value ;
             if (this_item.menu_combo_items != "" && this_item.menu_combo_items!=undefined  && this_item.menu_combo_items!=null && this_item.menu_combo_items!="undefined") {
                 invoice_print+= `<br><span  style="padding-left: 30px;">`+combo_txt+this_item.menu_combo_items+`</span>`;
@@ -3809,13 +3837,8 @@
                     draw_table_for_last_ten_sales_order
                 );
                 let total_items_in_cart_with_quantity = 0;
-                $(
-                    ".last_ten_sales_holder .modifier_item_details_holder .single_item_modifier .first_portion .third_column span"
-                ).each(function (i, obj) {
-                    total_items_in_cart_with_quantity =
-                        parseInt(total_items_in_cart_with_quantity) +
-                        parseInt($(this).html());
-                });
+                // Count distinct items (products), not total quantity
+                total_items_in_cart_with_quantity = $(".last_ten_sales_holder .modifier_item_details_holder .single_item_modifier").length;
                 $("#total_items_in_cart_last_10").html(
                     total_items_in_cart_with_quantity
                 );
@@ -16022,10 +16045,8 @@
                       $(".item_order_details .modifier_item_details_holder").prepend(
                           draw_table_for_last_ten_sales_order
                       );
-                      let total_items_in_cart_with_quantity = 0;
-                      $(".item_order_details .modifier_item_details_holder .single_item_modifier .first_portion .third_column span").each(function (i, obj) {
-                          total_items_in_cart_with_quantity = parseInt(total_items_in_cart_with_quantity) + parseInt($(this).html());
-                      });
+                      // Count distinct items (products), not total quantity
+                      let total_items_in_cart_with_quantity = $(".item_order_details .modifier_item_details_holder .single_item_modifier").length;
   
                       $(".total_items_in_cart_last_10_").html(total_items_in_cart_with_quantity);
   
@@ -16543,10 +16564,9 @@
                       $(".item_order_details .modifier_item_details_holder").prepend(
                           draw_table_for_last_ten_sales_order
                       );
-                      let total_items_in_cart_with_quantity = 0;
-                      $(".item_order_details .modifier_item_details_holder .single_item_modifier .first_portion .third_column span").each(function (i, obj) {
-                          total_items_in_cart_with_quantity +=  parseInt($(this).text());
-                      });
+                      // Count distinct items (products), not total quantity
+                      // Count the number of .single_item_modifier elements, which represents distinct items
+                      let total_items_in_cart_with_quantity = $(".item_order_details .modifier_item_details_holder .single_item_modifier").length;
   
                       $(".total_items_in_cart_last_10_").html(total_items_in_cart_with_quantity);
   

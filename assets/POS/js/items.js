@@ -31,6 +31,28 @@ function getAlternativeNameById(menu_id,myArray){
     }
     return name;
 }
+// Helper function to check if menu_name already contains alternative name
+function shouldAppendAlternativeName(menu_name, alternative_name) {
+    if (!alternative_name || alternative_name === '') {
+        return false;
+    }
+    // Check if menu_name already ends with the alternative name in brackets
+    let alt_pattern = "(" + alternative_name + ")";
+    if (menu_name && menu_name.trim().endsWith(alt_pattern)) {
+        return false; // Already contains it, don't append
+    }
+    // Check if menu_name already contains any pattern like "(...)" at the end
+    // This handles cases where menu_name is already formatted from frontend
+    let bracket_pattern = /\([^)]+\)\s*$/;
+    if (menu_name && bracket_pattern.test(menu_name.trim())) {
+        // If it already has brackets, check if it matches the alternative name
+        let match = menu_name.trim().match(/\(([^)]+)\)\s*$/);
+        if (match && match[1] === alternative_name) {
+            return false; // Already contains the same alternative name
+        }
+    }
+    return true; // Safe to append
+}
 
 function searchAddress(nameKey, myArray){
     let foundResult=new Array();

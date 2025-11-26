@@ -946,6 +946,10 @@ $(document).ready(function() {
         // Enable smooth programmatic scrolling
         $wrap.css('scrollBehavior','smooth');
         function updateArrows(){
+            // Force reflow to ensure accurate measurements
+            if ($wrap.length && $wrap[0]) {
+                $wrap[0].offsetHeight; // Force reflow
+            }
             var canScroll = $wrap[0].scrollWidth > $wrap[0].clientWidth + 2; // allow small epsilon
             $prev.css('display', canScroll ? 'flex' : 'none');
             $next.css('display', canScroll ? 'flex' : 'none');
@@ -965,9 +969,76 @@ $(document).ready(function() {
         // Update on scroll and resize
         $wrap.on('scroll', updateArrows);
         $(window).on('resize', updateArrows);
-        // Initial
-        $wrap.scrollLeft(0);
-        setTimeout(updateArrows, 0);
+        
+        // Wait for images to load before calculating scroll width
+        function waitForImagesAndUpdate() {
+            var $images = $wrap.find('img');
+            var imagesToLoad = $images.length;
+            var imagesLoaded = 0;
+            var allLoaded = false;
+            
+            function doUpdate() {
+                // Use requestAnimationFrame to ensure layout is complete
+                requestAnimationFrame(function() {
+                    $wrap.scrollLeft(0);
+                    setTimeout(function() {
+                        updateArrows();
+                    }, 50);
+                });
+            }
+            
+            function checkAndUpdate() {
+                if (!allLoaded && imagesLoaded === imagesToLoad) {
+                    allLoaded = true;
+                    doUpdate();
+                }
+            }
+            
+            if (imagesToLoad === 0) {
+                // No images, update immediately
+                doUpdate();
+                return;
+            }
+            
+            // Check if images are already loaded
+            $images.each(function() {
+                if (this.complete && this.naturalHeight !== 0) {
+                    imagesLoaded++;
+                    checkAndUpdate();
+                } else {
+                    var $img = $(this);
+                    $img.off('load error').on('load error', function() {
+                        if (!allLoaded) {
+                            imagesLoaded++;
+                            checkAndUpdate();
+                        }
+                    });
+                }
+            });
+            
+            // Fallback: update after a reasonable delay even if images haven't loaded
+            setTimeout(function() {
+                if (!allLoaded) {
+                    allLoaded = true;
+                    doUpdate();
+                }
+            }, 1000);
+        }
+        
+        // Initial update - wait for images
+        waitForImagesAndUpdate();
+        
+        // Also update on window load (after all resources are loaded)
+        $(window).on('load', function() {
+            setTimeout(function() {
+                updateArrows();
+            }, 150);
+        });
+        
+        // Additional safety: update after a short delay to catch any edge cases
+        setTimeout(function() {
+            updateArrows();
+        }, 200);
     })();
     
     // Initialize Isotope on page load for "All" view

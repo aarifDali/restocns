@@ -13466,6 +13466,17 @@
   
       $("#order_detail_modal").removeClass("active");
       $(".pos__modal__overlay").fadeOut(300);
+      
+      // Check if we should reopen Self/Online Orders modal after payment
+      let reopen_modal = $("#reopen_self_online_modal").val();
+      if(reopen_modal == "1"){
+          // Reset flag
+          $("#reopen_self_online_modal").val("0");
+          // Reopen the modal with refreshed order list
+          setTimeout(function() {
+              reopenSelfOnlineOrdersModal();
+          }, 350);
+      }
     }
     function refresh_orders_left() {
       if (
@@ -15722,6 +15733,10 @@
           let is_self_order = $("#is_self_order").val();
           let is_self_order_tmp = Number($("#is_self_order_tmp").val());
           if(is_self_order=="Yes" || is_self_order_tmp==1){
+              // Set flag to reopen Self/Online Orders modal after payment
+              if(is_self_order_tmp==1){
+                  $("#reopen_self_online_modal").val("1");
+              }
               let pos_17 = Number($("#pos_17").val());
               if(pos_17){
                   $.ajax({
@@ -16357,6 +16372,22 @@
           let is_self_order = $("#is_self_order").val();
           let is_self_order_tmp = Number($("#is_self_order_tmp").val());
   
+          // Switch to details view when clicking on an order
+          // On desktop (>=700px), both sections are visible side by side
+          // On mobile (<700px), toggle between list and details views
+          $('#self_online_details_action').attr("data-selectedbtn", "selected");
+          $("#self_online_list_action").attr("data-selectedbtn", "unselected");
+          
+          if($(window).width() < 700){
+              // Mobile: toggle views
+              $("#self_online_list").fadeOut(0);
+              $("#self_online_details").fadeIn(300);
+          } else {
+              // Desktop: keep both visible, just highlight the details button
+              $("#self_online_list").show();
+              $("#self_online_details").show();
+          }
+  
           if(is_self_order=="Yes" || is_self_order_tmp==1){
               $(".self_hide_div").hide();
               if(status_for_self_order=="Pending"){
@@ -16559,14 +16590,14 @@
                           draw_table_for_last_ten_sales_order += "</div>";
                       }
   
-                      //add to top
-                      $(".item_order_details .modifier_item_details_holder").empty();
-                      $(".item_order_details .modifier_item_details_holder").prepend(
+                      //add to top - target specifically the Self/Online Orders modal details section
+                      $("#self_online_details .item_order_details .modifier_item_details_holder").empty();
+                      $("#self_online_details .item_order_details .modifier_item_details_holder").prepend(
                           draw_table_for_last_ten_sales_order
                       );
                       // Count distinct items (products), not total quantity
                       // Count the number of .single_item_modifier elements, which represents distinct items
-                      let total_items_in_cart_with_quantity = $(".item_order_details .modifier_item_details_holder .single_item_modifier").length;
+                      let total_items_in_cart_with_quantity = $("#self_online_details .item_order_details .modifier_item_details_holder .single_item_modifier").length;
   
                       $(".total_items_in_cart_last_10_").html(total_items_in_cart_with_quantity);
   
@@ -19872,6 +19903,183 @@
               },
           });
       });
+      
+      // Helper function to reopen Self/Online Orders modal with refreshed list
+      function reopenSelfOnlineOrdersModal() {
+          remove_all_cart_future_info();
+          
+          // Clear Self/Online Orders modal details section
+          $("#self_online_last_10_waiter_id_").html("");
+          $("#self_online_last_10_waiter_name_").html("");
+          $("#self_online_last_10_customer_id_").html("");
+          $("#self_online_last_10_customer_name_").html("");
+          $("#self_online_last_10_table_id_").html("");
+          $("#self_online_last_10_table_name_").html("None");
+          $("#self_online_last_10_order_type_").html("");
+          $("#self_online_last_10_order_type_id_").html("");
+          // Clear specifically the Self/Online Orders modal details section
+          $("#self_online_details .item_order_details .modifier_item_details_holder").empty();
+          $(".total_items_in_cart_last_10_").html("0");
+          $(".sub_total_show_last_10_").html(Number(0).toFixed(ir_precision));
+          $(".all_items_discount_last_10_").html(Number(0).toFixed(ir_precision));
+          $(".sub_total_discount_last_10_").html(Number(0).toFixed(ir_precision));
+          $(".delivery_charge_last_10_").html(Number(0).toFixed(ir_precision));
+          $(".tips_amount_last_10_").html(Number(0).toFixed(ir_precision));
+          $(".total_payable_last_10_").html(Number(0).toFixed(ir_precision));
+          $(".recent_sale_modal_details_vat_").html(Number(0).toFixed(ir_precision));
+          $("#last_future_sale_id").val("");
+          $("#temp_sale_no").val("");
+          $("#draft_edit_modal").hide();
+          
+          $("#is_self_order").val("Yes");
+          $("#is_self_order_tmp").val(1);
+          $(".title_set_as_decline").show();
+          
+          //self order
+          let date_txt = $("#date_txt").val();
+          $(".last_table_name").html(date_txt);
+          
+          let set_as_approved = $("#set_as_approved").val();
+          $(".title_set_as").html(set_as_approved);
+          
+          let self_orders = $("#self_orders").val();
+          $(".self_order_title").html(self_orders);
+          
+          // Switch to Order List view (not details view)
+          // On desktop, both list and details are visible side by side
+          // On mobile, they toggle. Ensure details section is visible on desktop
+          $("#self_online_list_action").attr("data-selectedbtn", "selected");
+          $("#self_online_details_action").attr("data-selectedbtn", "unselected");
+          $("#self_online_list").fadeIn(300);
+          
+          // Ensure details section is visible (but empty) so it can be populated when order is clicked
+          // On desktop (>=700px), both sections are visible side by side
+          // On mobile (<700px), details should be hidden initially
+          if($(window).width() >= 700){
+              // Desktop: show details section (it will be empty until order is clicked)
+              $("#self_online_details").show();
+          } else {
+              // Mobile: hide details initially, will show when order is clicked
+              $("#self_online_details").fadeOut(0);
+          }
+          
+          $(".cus_pos_modal_self_online_sale_modal").addClass("active");
+          $(".pos__modal__overlay").fadeIn(200);
+          
+          $.ajax({
+              url: base_url + "Sale/get_last_10_self_order_sales_ajax_admin",
+              method: "POST",
+              dataType:"json",
+              success: function (response) {
+                  $(".detail_holder_self_order").empty();
+                  $(".detail_holder_online_order").empty();
+  
+                  if((response.self_orders).length){
+                      let orders = (response.self_orders);
+                      let html_custom = ` `;
+                      for (let key in orders) {
+                          let order_name = "";
+                          if (orders[key].order_type == 1) {
+                              order_name = orders[key].sale_no;
+                          } else if (orders[key].order_type == 2) {
+                              order_name = orders[key].sale_no;
+                          } else if (orders[key].order_type == 3) {
+                              order_name = orders[key].sale_no;
+                          }
+  
+                          let phone_text_ = "";
+                          if (orders[key].phone) {
+                              phone_text_ = " (" + orders[key].phone + ")";
+                          }
+                          let bg_color = "";
+                          let ignore_status = "";
+                          if (orders[key].future_sale_status == 3) {
+                              bg_color = "#99e299";
+                              ignore_status = "No";
+                          }
+                          html_custom +=
+                              `<div data-ignore_status="` +
+                              ignore_status +
+                              `" style="background-color:` +
+                              bg_color +
+                              `" class="self_online_order_row single_self_sale tbl_pointer_row_custom self_preview_row future_last_ten_custom_` +
+                              orders[key].id +
+                              `"  data-id="` +
+                              orders[key].id +
+                              `"  data-selected="unselected">
+                                              <div class="item first_column column css_column_1">` +
+                              order_name +
+                              `</div>
+                                              <div class="item second_column column css_column_2">` +
+                              orders[key].customer_name +
+                              phone_text_ +
+                              `</div>
+                                              <div class="item third_column column">` +
+                              orders[key].sale_date +
+                              `</div>
+                                          </div>`;
+                      }
+                      $(".detail_holder_self_order").prepend(html_custom);
+                  }
+                  if((response.online_orders).length){
+                      let online_orders = (response.online_orders);
+  
+                      let html_custom_online = ` `;
+                      for (let key in online_orders) {
+                          let order_name = "";
+                          if (online_orders[key].order_type == 1) {
+                              order_name = online_orders[key].sale_no;
+                          } else if (online_orders[key].order_type == 2) {
+                              order_name = online_orders[key].sale_no;
+                          } else if (online_orders[key].order_type == 3) {
+                              order_name = online_orders[key].sale_no;
+                          }
+  
+                          let phone_text_ = "";
+                          if (online_orders[key].phone) {
+                              phone_text_ = " (" + online_orders[key].phone + ")";
+                          }
+                          if(online_orders[key].del_address && online_orders[key].del_address!=undefined){
+                              phone_text_ = "<br>"+online_orders[key].del_address;
+                          }
+                          let bg_color = "";
+                          let ignore_status = "";
+                          if (online_orders[key].future_sale_status == 3) {
+                              bg_color = "#99e299";
+                              ignore_status = "No";
+                          }
+                          html_custom_online +=
+                              `<div data-ignore_status="` +
+                              ignore_status +
+                              `" style="background-color:` +
+                              bg_color +
+                              `" class="self_online_order_row single_online_sale tbl_pointer_row_custom online_preview_row future_last_ten_custom_` +
+                              online_orders[key].id +
+                              `"  data-id="` +
+                              online_orders[key].id +
+                              `"  data-selected="unselected">
+                                              <div class="item first_column column css_column_1">` +
+                              order_name +
+                              `</div>
+                                              <div class="item second_column column css_column_2">` +
+                              online_orders[key].customer_name +
+                              phone_text_ +
+                              `</div>
+                                              <div class="item third_column column">` +
+                              online_orders[key].sale_date +
+                              `</div>
+                                          </div>`;
+                      }
+                      $(".detail_holder_online_order").prepend(html_custom_online);
+                  }
+  
+              },
+              error: function () {
+                  alert(a_error);
+              },
+          });
+      }
+      
       $(document).on("click", "#draft_edit_modal_invoice_decline", function () {
           let pos_18 = Number($("#pos_18").val());
           if(pos_18){

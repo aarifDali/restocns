@@ -381,3 +381,4 @@ $self_order_table_id = $this->session->userdata('self_order_table_id');
 <input type="hidden" id="change_table" value="<?php echo lang('change_table'); ?>">
 <input type="hidden" id="change_anything_in_an_order" value="<?php echo lang('change_anything_in_an_order'); ?>">
 <input type="hidden" id="reset_table_alert" value="<?php echo lang('reset_table_alert'); ?>">
+<input type="hidden" id="reopen_self_online_modal" value="0">
